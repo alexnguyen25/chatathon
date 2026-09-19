@@ -4,8 +4,8 @@ private struct ExampleMoment: Identifiable {
     let id = UUID()
     let time: String
     let title: String
-    let detail: String
-    let bpm: Int?
+    let bpm: Int
+    let isAvailable: Bool
 }
 
 struct ExampleDayView: View {
@@ -13,73 +13,108 @@ struct ExampleDayView: View {
     @State private var isSaved = false
 
     private let moments = [
-        ExampleMoment(time: "9:00", title: "Planning", detail: "Calendar", bpm: 72),
-        ExampleMoment(time: "10:00", title: "Focus", detail: "Calendar", bpm: 76),
-        ExampleMoment(time: "11:00", title: "Design Review", detail: "Calendar · synthetic change begins", bpm: 84),
-        ExampleMoment(time: "11:30", title: "Design Review", detail: "Synthetic observation", bpm: 91),
-        ExampleMoment(time: "12:00", title: "Available", detail: "30-minute open calendar slot", bpm: 88),
-        ExampleMoment(time: "12:30", title: "Lunch", detail: "Calendar", bpm: 76),
-        ExampleMoment(time: "13:00", title: "Deep Work", detail: "Calendar", bpm: 73),
+        ExampleMoment(time: "9 AM", title: "Planning", bpm: 72, isAvailable: false),
+        ExampleMoment(time: "10 AM", title: "Focus", bpm: 76, isAvailable: false),
+        ExampleMoment(time: "11 AM", title: "Design review", bpm: 84, isAvailable: false),
+        ExampleMoment(time: "12 PM", title: "Available", bpm: 92, isAvailable: true),
+        ExampleMoment(time: "1 PM", title: "Lunch", bpm: 78, isAvailable: false),
+        ExampleMoment(time: "2 PM", title: "Deep work", bpm: 74, isAvailable: false),
+        ExampleMoment(time: "3 PM", title: "Team sync", bpm: 81, isAvailable: false),
+        ExampleMoment(time: "4 PM", title: "Wrap-up", bpm: 73, isAvailable: false),
     ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    Text("Example day")
-                        .font(.largeTitle.bold())
-                    Text("A clearly labeled synthetic showcase. It never replaces your live Health data.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 24) {
+                    Label("PulsePlan", systemImage: "waveform.path.ecg")
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(PulsePlanTheme.ink)
+                        .tint(PulsePlanTheme.forest)
 
-                    GroupBox("Monday · September 21") {
-                        VStack(spacing: 0) {
-                            ForEach(moments) { moment in
-                                HStack(alignment: .top, spacing: 12) {
-                                    Text(moment.time)
-                                        .font(.footnote.monospacedDigit())
-                                        .frame(width: 42, alignment: .leading)
-                                        .foregroundStyle(.secondary)
-                                    Circle()
-                                        .fill(moment.title == "Available" ? Color.green : Color(red: 0.65, green: 0.33, blue: 0.26))
-                                        .frame(width: 10, height: 10)
-                                        .padding(.top, 5)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        HStack {
-                                            Text(moment.title).font(.body.weight(.medium))
-                                            Spacer()
-                                            if let bpm = moment.bpm { Text("\(bpm) BPM").font(.footnote.monospacedDigit()) }
-                                        }
-                                        Text(moment.detail).font(.footnote).foregroundStyle(.secondary)
-                                    }
-                                }
-                                .padding(.vertical, 10)
-                            }
+                    HStack(alignment: .bottom) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Your day").font(.system(size: 42, weight: .bold, design: .rounded))
+                            Text("Mon, Sep 21").font(.title3).foregroundStyle(PulsePlanTheme.secondary)
+                        }
+                        Spacer()
+                        Text("Sample data")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(PulsePlanTheme.forest)
+                            .padding(.horizontal, 14).padding(.vertical, 8)
+                            .background(PulsePlanTheme.sage, in: Capsule())
+                    }
+
+                    HStack {
+                        Text("Time").frame(width: 54, alignment: .leading)
+                        Text("Calendar")
+                        Spacer()
+                        Text("Heart rate\n(BPM)").multilineTextAlignment(.trailing)
+                    }
+                    .font(.subheadline.weight(.medium))
+
+                    VStack(spacing: 0) {
+                        ForEach(moments) { moment in
+                            ExampleTimelineRow(moment: moment, isSaved: isSaved)
                         }
                     }
 
-                    GroupBox("Planning prompt") {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Label("Synthetic observation", systemImage: "sparkles")
-                                .font(.subheadline.weight(.semibold))
-                            Text("Readings changed during Design Review. A 30-minute opening appears before Lunch.")
-                            Text("Consider protecting 12:00–12:15 as a private reset before afternoon work.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Button(isSaved ? "Added to example day" : "Review suggestion") {
-                                isReviewingSuggestion = true
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(alignment: .top, spacing: 14) {
+                            Image(systemName: "cup.and.saucer").font(.title).foregroundStyle(PulsePlanTheme.ink)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(isSaved ? "Break added to example day" : "Make room for a break")
+                                    .font(.title3.weight(.semibold))
+                                Text("12:00–12:15 PM · Free in your calendar")
+                                    .foregroundStyle(PulsePlanTheme.secondary)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .tint(Color(red: 0.14, green: 0.36, blue: 0.27))
                         }
+                        Button(isSaved ? "Review example event" : "Review suggestion") { isReviewingSuggestion = true }
+                            .frame(maxWidth: .infinity, minHeight: 54)
+                            .background(PulsePlanTheme.forest, in: RoundedRectangle(cornerRadius: 14))
+                            .foregroundStyle(.white).font(.headline)
                     }
+                    .padding(18)
+                    .background(PulsePlanTheme.sage, in: RoundedRectangle(cornerRadius: 16))
                 }
-                .padding()
+                .padding(24)
             }
+            .background(PulsePlanTheme.canvas)
+            .navigationBarHidden(true)
             .navigationDestination(isPresented: $isReviewingSuggestion) {
                 SuggestionReviewView(isSaved: $isSaved)
             }
         }
+    }
+}
+
+private struct ExampleTimelineRow: View {
+    let moment: ExampleMoment
+    let isSaved: Bool
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(moment.time).font(.footnote).foregroundStyle(PulsePlanTheme.secondary)
+                .frame(width: 54, alignment: .leading)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(moment.isAvailable ? Color.clear : PulsePlanTheme.sage)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(moment.isAvailable ? PulsePlanTheme.forest : Color.clear, style: StrokeStyle(lineWidth: 1.5, dash: moment.isAvailable ? [5, 4] : []))
+                }
+                .overlay(alignment: .leading) {
+                    Text(moment.isAvailable && isSaved ? "Private reset · 12:00–12:15" : moment.title)
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 14)
+                }
+                .frame(height: 54)
+            VStack(spacing: 2) {
+                Circle().fill(PulsePlanTheme.terracotta).frame(width: 9, height: 9)
+                Text("\(moment.bpm)").font(.footnote.monospacedDigit()).foregroundStyle(PulsePlanTheme.secondary)
+            }
+            .frame(width: 34)
+        }
+        .padding(.vertical, 4)
     }
 }
 
@@ -88,24 +123,28 @@ private struct SuggestionReviewView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        Form {
-            Section("Private reset") {
+        VStack(alignment: .leading, spacing: 24) {
+            Text("Review calendar event").font(.largeTitle.bold())
+            VStack(alignment: .leading, spacing: 16) {
+                Label("Private reset", systemImage: "cup.and.saucer").font(.title3.weight(.semibold))
+                Divider()
                 LabeledContent("Date", value: "Monday, Sep 21")
-                LabeledContent("Time", value: "12:00–12:15")
-                LabeledContent("Calendar", value: "Example day only")
+                LabeledContent("Time", value: "12:00–12:15 PM")
+                LabeledContent("Destination", value: "Example day")
             }
-            Section {
-                Text("This screen does not write to your real calendar. It demonstrates the review-before-save flow.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            Section {
-                Button("Add to example day") {
-                    isSaved = true
-                    dismiss()
-                }
-            }
+            .padding(20)
+            .background(PulsePlanTheme.sage, in: RoundedRectangle(cornerRadius: 16))
+            Text("This is a sample-only confirmation. It never writes to your real calendar.")
+                .font(.footnote).foregroundStyle(PulsePlanTheme.secondary)
+            Spacer()
+            Button("Add to example day") { isSaved = true; dismiss() }
+                .frame(maxWidth: .infinity, minHeight: 54)
+                .background(PulsePlanTheme.forest, in: RoundedRectangle(cornerRadius: 14))
+                .foregroundStyle(.white).font(.headline)
         }
-        .navigationTitle("Review suggestion")
+        .padding(24)
+        .background(PulsePlanTheme.canvas)
+        .navigationTitle("Suggestion")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

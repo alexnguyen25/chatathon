@@ -19,15 +19,25 @@ struct ContentView: View {
             ExampleDayView()
                 .tabItem { Label("Example day", systemImage: "calendar") }
         }
-        .tint(Color(red: 0.14, green: 0.36, blue: 0.27))
+        .tint(PulsePlanTheme.forest)
     }
 
     private var liveTab: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Image(systemName: "heart.text.square.fill").font(.system(size: 52)).foregroundStyle(.red)
-                Text("PulsePlan").font(.largeTitle.bold())
-                Text("Private context for your day.").foregroundStyle(.secondary)
+                Label("PulsePlan", systemImage: "waveform.path.ecg")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(PulsePlanTheme.ink)
+                    .tint(PulsePlanTheme.forest)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text("Live heart rate")
+                    .font(.system(size: 40, weight: .bold, design: .rounded))
+                    .foregroundStyle(PulsePlanTheme.ink)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Label(measurement.isMeasuring ? "Collecting via HealthKit" : "Ready for a private focus session", systemImage: "circle.fill")
+                    .foregroundStyle(PulsePlanTheme.secondary)
+                    .tint(measurement.isMeasuring ? .green : PulsePlanTheme.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 GroupBox("Meeting context") {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(calendar.status).font(.footnote).foregroundStyle(.secondary)
@@ -47,9 +57,10 @@ struct ContentView: View {
                 }
                 GroupBox("Live focus session") {
                     VStack(spacing: 12) {
-                        Text(measurement.status).foregroundStyle(.secondary).multilineTextAlignment(.center)
-                        Text(measurement.heartRate.map { "\(Int($0.rounded()))" } ?? "—").font(.system(size: 78, weight: .semibold, design: .rounded)).monospacedDigit()
-                        Text("BPM").foregroundStyle(.secondary)
+                        Text(measurement.status).foregroundStyle(PulsePlanTheme.secondary).multilineTextAlignment(.center)
+                        Image(systemName: "heart").font(.system(size: 34)).foregroundStyle(PulsePlanTheme.terracotta)
+                        Text(measurement.heartRate.map { "\(Int($0.rounded()))" } ?? "—").font(.system(size: 88, weight: .semibold, design: .rounded)).foregroundStyle(PulsePlanTheme.ink).monospacedDigit()
+                        Text("BPM · Latest reading").foregroundStyle(PulsePlanTheme.secondary)
                         if let baseline = measurement.baselineHeartRate, let current = measurement.heartRate {
                             Text("Baseline \(Int(baseline.rounded())) BPM · \(Int((current - baseline).rounded())) BPM from baseline").font(.footnote).foregroundStyle(.secondary)
                         }
@@ -57,7 +68,7 @@ struct ContentView: View {
                             measurement.isMeasuring
                                 ? measurement.stopMeasurement()
                                 : measurement.startMeasurement(title: selectedEvent?.title ?? "Personal focus")
-                        }.buttonStyle(.borderedProminent).tint(measurement.isMeasuring ? .red : .blue)
+                        }.buttonStyle(.borderedProminent).tint(measurement.isMeasuring ? .red : PulsePlanTheme.forest)
                         Button("Allow Health access") { measurement.requestAuthorization() }.buttonStyle(.bordered)
                     }
                 }
@@ -85,6 +96,7 @@ struct ContentView: View {
         .onChange(of: measurement.finishedSession) { _, session in
             if let session { history.add(session) }
         }
+        .background(PulsePlanTheme.canvas)
     }
 }
 
