@@ -211,7 +211,10 @@ public final class LiveSessionModel {
         }
     }
 
-    deinit { ticker?.cancel() }
+    // No deinit cancelling `ticker`: deinit is nonisolated and cannot touch a
+    // @MainActor property. It is not needed either — the loop captures
+    // [weak self], so once this object goes away the `guard let self` fails
+    // and the task returns on its next tick.
 }
 
 extension Array {
