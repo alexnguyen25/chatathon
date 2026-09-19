@@ -153,3 +153,9 @@ DerivedData/
 
 # Real key never gets committed; Secrets.xcconfig.example is the template.
 ios/Config/Secrets.xcconfig
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.env

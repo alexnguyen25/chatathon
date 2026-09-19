@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Standup",
+    "type": "team",
+    "start": "2026-09-19T09:00:00",
+    "end": "2026-09-19T09:30:00",
+    "back_to_back": false
+  },
+  {
+    "title": "Design Review",
+    "type": "high_focus",
+    "start": "2026-09-19T10:00:00",
+    "end": "2026-09-19T11:00:00",
+    "back_to_back": false
+  },
+  {
+    "title": "Client Call",
+    "type": "high_stakes",
+    "start": "2026-09-19T11:00:00",
+    "end": "2026-09-19T12:00:00",
+    "back_to_back": true
+  },
+  {
+    "title": "1:1 with Manager",
+    "type": "one_on_one",
+    "start": "2026-09-19T13:00:00",
+    "end": "2026-09-19T13:30:00",
+    "back_to_back": false
+  },
+  {
+    "title": "Sprint Planning",
+    "type": "high_focus",
+    "start": "2026-09-19T13:30:00",
+    "end": "2026-09-19T14:30:00",
+    "back_to_back": true
+  },
+  {
+    "title": "Cross-team Sync",
+    "type": "team",
+    "start": "2026-09-19T14:30:00",
+    "end": "2026-09-19T15:00:00",
+    "back_to_back": true
+  },
+  {
+    "title": "Deep Work Block",
+    "type": "focus_time",
+    "start": "2026-09-19T15:15:00",
+    "end": "2026-09-19T16:15:00",
+    "back_to_back": false
+  },
+  {
+    "title": "All-Hands",
+    "type": "team",
+    "start": "2026-09-19T16:15:00",
+    "end": "2026-09-19T16:45:00",
+    "back_to_back": true
+  }
+]
