@@ -1,48 +1,49 @@
 # PulsePlan
 
-PulsePlan is a private, on-device health check-in: it reads today’s calendar
-after permission and starts a voluntary HealthKit focus session to display
-live heart rate. It is deliberately not an employee-surveillance or
-stress-diagnosis tool.
+A native iPhone MVP that connects heart-rate observations to an optional break in your calendar. Health analysis and Apple Foundation Models inference run on-device. No backend or cloud API key is required.
 
-## What this MVP proves
+The app opens in a clearly labeled fictional demo day at **11:55 AM**, with 15 calendar events and simulated heart-rate readings. A deterministic, unvalidated pattern rule checks for a sustained rise before suggesting a pause. The model can choose a constrained calm pause; measurements, comparisons, and calendar availability are computed in Swift. If the model is unavailable or fails, an explicitly labeled fallback keeps the flow usable.
 
-- A supported iPhone app can request HealthKit access and read live BPM during
-  an active workout.
-- The app can request calendar access separately and list today’s events.
-- The app saves average and peak BPM locally for each focus session.
-- The deterministic demo pipeline produces calendar-aware, non-medical planning suggestions from synthetic data.
-- The measurement remains on-device; there is no backend or manager-facing
-  dashboard.
+## Run
 
-AirPods Pro 3 heart-rate monitoring is available only while an active workout
-is running. AirPods do not provide a direct raw sensor/Bluetooth feed or
-guaranteed live HRV. When an Apple Watch is also worn, HealthKit may choose the
-watch as the highest-confidence source.
+1. Open [`ios/PulsePlan.xcodeproj`](ios/PulsePlan.xcodeproj) in **Xcode 26 or newer**.
+2. Select the **PulsePlan** scheme and an **iOS 26 or newer** simulator or iPhone.
+3. For a physical device, select your own team in Signing & Capabilities and change the bundle identifier if needed. The checked-in signing settings belong to the original development setup.
+4. Build and run. Demo mode needs no Health or Calendar permissions. Apple Intelligence availability affects the AI pause selection, not the demo's deterministic analysis or fallback.
 
-## Run on an iPhone
+## Try the demo
 
-1. Open [PulsePlanIOS/Untitled Project.xcodeproj](PulsePlanIOS/Untitled%20Project.xcodeproj) in Xcode.
-2. In **Signing & Capabilities**, choose your Apple Developer team and use a
-   unique bundle identifier if Xcode requests one.
-3. Connect a physical iPhone running iOS 26 or newer; select it as the run
-   destination.
-4. Pair and wear compatible AirPods Pro 3 and enable their heart-rate feature.
-5. Run the app and tap **Connect calendar** to grant or decline calendar
-   access independently.
-6. Tap **Allow Health access**, choose an optional Calendar context, then **Start focus session**.
-   The live BPM value and its delta from the initial three-sample baseline will
-   update as HealthKit delivers samples. Tap **End session** to finish the
-   voluntary workout.
+Tap **Analyze my signals → Review break → Add to demo day → See it in my day**. The first proposed break is **12:00–12:15**, between the morning meetings and 12:30 lunch. Explore **Your day** and **Health**, then use **Reset** in the demo banner to repeat. Demo changes stay inside the app and never write to Health or Calendar.
 
-The Simulator can compile and present the interface, but it cannot validate a
-real AirPods heart-rate stream.
+For real data, leave demo mode with **Exit** or **Connections → Explore a demo day**, then connect Health and Calendar separately. Health can read recorded heart rate, HRV (SDNN), resting heart rate, and sleep when available. A real calendar write requires reviewing the break, choosing a writable calendar, and tapping **Add to calendar**. The event is titled “Private reset” and omits health readings and AI explanations; its visibility and synchronization follow the selected calendar's settings.
 
-## Verify locally
+Optional live collection is under **Health**. It starts and saves an “Other” workout in Apple Health and may affect activity metrics. Readings depend on supported hardware and permissions; this is not passive, continuous, all-day AirPods monitoring. Simulator use does not validate physical sensor streaming.
+
+## Verify
+
+From the repository root, with Xcode 26 or newer installed:
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer bash scripts/check.sh
+```
+
+Or run the checks separately:
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcrun swift test
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
-  -project 'PulsePlanIOS/Untitled Project.xcodeproj' -scheme MyApp \
-  -sdk iphoneos -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
+  -project ios/PulsePlan.xcodeproj -scheme PulsePlan \
+  -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+  CODE_SIGNING_ALLOWED=NO build
 ```
+
+The root Swift package tests the app's actual [`Core`](ios/PulsePlan/Core) sources. Hardware HealthKit behavior, on-device model availability, and real calendar permissions/saves also need device verification.
+
+## Repository
+
+- [`ios/PulsePlan`](ios/PulsePlan): the active SwiftUI app, deterministic core, HealthKit, EventKit, and on-device suggestion code.
+- [`Tests/PulsePlanCoreTests`](Tests/PulsePlanCoreTests): core logic tests, run with `swift test`.
+- [`docs`](docs/README.md): implementation notes, research, and the canonical [visual design reference](docs/design/pulseplan-core/README.md).
+- [`archive`](archive/README.md): preserved earlier prototypes; not dependencies of the active app.
+
+This is an experimental, nonmedical hackathon MVP. Its heart-pattern rule is not clinically validated, does not diagnose stress, and cannot establish that a meeting caused a physiological change. Missing data or no triggered suggestion does not establish wellbeing. Background monitoring, reliable all-day capture, and App Store readiness are not claimed.

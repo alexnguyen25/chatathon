@@ -1,42 +1,24 @@
-# PulsePlan synthetic showcase
+# Working on PulsePlan
 
-This repository is a hackathon prototype for a privacy-first, calendar-aware
-stress monitor. It demonstrates a pipeline rather than a medical product:
+Read [README.md](README.md) for the current run and verification commands and [docs/README.md](docs/README.md) for design and research references.
 
-`synthetic biometric signal → descriptive change window → calendar context → voluntary planning prompt`
+## Active implementation
 
-## Product intent
+- Xcode project: `ios/PulsePlan.xcodeproj`; scheme: `PulsePlan`; Xcode 26+, iOS 26+.
+- App entry: `ios/PulsePlan/App/PulsePlanApp.swift` → `Views/TodayView.swift`.
+- Shared logic: `ios/PulsePlan/Core`. The root `Package.swift` compiles these same sources for `swift test`; tests belong in `Tests/PulsePlanCoreTests`.
+- Integrations: `Health`, `Calendar`, and `Suggestions` inside `ios/PulsePlan`.
+- Visual design reference: `docs/design/pulseplan-core`; retain the research and design history.
+- `archive/legacy-prototypes` contains superseded implementations, not active dependencies. Do not wire its Python/Gemini pipeline, generated JSON, or old Swift packages into the app by accident.
 
-The demo joins minute-level heart-rate (HR) and heart-rate variability (HRV)
-with a work calendar, highlights a sustained synthetic change, and proposes one
-voluntary calendar-aware action. It does not determine stress or its cause.
+## Product boundaries
 
-## Current prototype
+Demo mode defaults to a fictional 11:55 AM day with 15 events. Demo mutations must stay separate from real Health and Calendar data. Keep fictional data and fallback output visibly labeled.
 
-The generated data intentionally uses a scripted Monday, 9am–5pm scenario so
-the presentation is deterministic:
+The deterministic heart-pattern rule gates suggestions. Apple Foundation Models selects a constrained calm pause only after that gate fires; it must not invent measurements, override the gate, diagnose stress, or claim calendar events caused health changes. Preserve the labeled fallback when model inference is unavailable or fails.
 
-- 11:00–12:00 is Design Review, followed by an open 12:00–12:30 gap before Lunch.
-- HR rises from roughly 72 BPM to the low 90s while HRV declines from roughly 65ms to the low 40s.
-- The score fires only after a 20% HRV drop persists for at least 15 minutes.
-- HRV recovers during the following calendar gap; later mild dips are not
-  treated as episodes.
+Real HealthKit and Calendar access is optional. A real break save requires explicit review and confirmation, checks current conflicts, and excludes physiological details and AI explanations from the event. “Private reset” is an event title, not a guarantee about the destination calendar's sharing settings.
 
-The UI renders the timeline, a synthetic observation, and a contextual planning
-prompt. The deterministic fallback works without exposing an API key.
+Live collection starts and saves a workout; it is not guaranteed passive AirPods or continuous background monitoring. Do not claim clinical validation or App Store readiness. Distinguish core test/build results from device verification.
 
-## Engineering guardrails
-
-- This is synthetic demonstration data, not a diagnostic or health tool.
-- Avoid framing HRV as a definitive measure of emotional state; call it a
-  signal that can support a voluntary suggestion.
-- Keep persistence checks: one noisy reading must never trigger an alert.
-- Preserve the calendar context in actions. “Move the 3pm 1:1 by 15 minutes”
-  is useful; generic wellness advice is not.
-- Any production LLM call must happen server-side with consent, least-privilege
-  calendar access, and no manager-facing individual health telemetry.
-
-## Run locally
-
-Open `index.html` in a browser, or serve this folder with any static web server.
-No install step is required.
+Before changing files, inspect the working tree and preserve unrelated edits. Keep documentation aligned with source, run relevant core tests, and build the iOS scheme after app changes. Personal signing settings may need adjustment on another developer's device.

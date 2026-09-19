@@ -2,13 +2,6 @@ import Combine
 import Foundation
 import HealthKit
 
-struct TodayHeartReading: Identifiable, Sendable {
-    let id: UUID
-    let date: Date
-    let bpm: Double
-    let source: String
-}
-
 @MainActor
 final class TodayHealthStore: ObservableObject {
     @Published private(set) var readings: [TodayHeartReading] = []

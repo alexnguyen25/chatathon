@@ -17,7 +17,8 @@ AI selects a constrained pause type using today's context. It cannot generate ar
 - Visually inspected Today, Your day, Health, and calendar review through iPhone Mirroring.
 - Generated a real on-device Apple Intelligence selection and verified the same proposed slot appears in the agenda.
 - Existing calendar gap checks passed in the prior integration work.
-- `git diff --check` passes. No pushes to main.
+- `git diff --check` passes. The final repository handoff uses the shared `PulsePlan` scheme in `ios/PulsePlan.xcodeproj`.
+- The current core rules have 25 persistent regression tests; `bash scripts/check.sh` runs them and compiles the simulator target.
 
 ## Not verified
 

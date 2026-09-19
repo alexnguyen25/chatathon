@@ -3,10 +3,11 @@ import PackageDescription
 
 let package = Package(
     name: "PulsePlan",
-    platforms: [.macOS(.v13)],
-    products: [.library(name: "PulsePlanCore", targets: ["PulsePlanCore"])],
+    products: [
+        .library(name: "PulsePlanCore", targets: ["PulsePlanCore"])
+    ],
     targets: [
-        .target(name: "PulsePlanCore", path: "ios/PulsePlan/Core"),
+        .target(name: "PulsePlanCore"),
         .testTarget(name: "PulsePlanCoreTests", dependencies: ["PulsePlanCore"])
     ]
 )

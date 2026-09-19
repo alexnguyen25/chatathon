@@ -1,130 +1,28 @@
-name: CI
+name: PulsePlan checks
 
 on:
   push:
-    branches: [main, frontend]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: pulseplan-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # The Python pipeline is the other implementation of the same detection.
-  # StressCore's PipelineParityTests assert the Swift detector reproduces the
-  # episode this script publishes, so if the script's output changes without
-  # the fixtures changing, that test is what catches it.
-  pipeline:
-    name: Python pipeline
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Detection is dependency-free
-        run: python pipeline/analyze_stress.py
-
-      # detected_episodes.json is committed, and the Swift parity test reads
-      # it. Regenerating must not silently change it.
-      - name: Committed episodes are reproducible
-        run: |
-          git diff --exit-code -- data/detected_episodes.json \
-            || { echo "::error::analyze_stress.py no longer reproduces data/detected_episodes.json"; exit 1; }
-
-
-  # The detector. This job also runs locally on Windows — see
-  # ios/scripts/swift-env.ps1 — so a failure here is a real regression, not a
-  # platform difference.
-  core:
-    name: StressCore tests
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v4
-      - name: swift test
-        working-directory: ios/StressCore
-        run: swift test --enable-code-coverage
-
-  # The part that cannot be verified off a Mac: SwiftUI and Swift Charts.
   app:
-    name: Build app for iOS Simulator
+    name: Core regression tests and iOS build
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
-
-      - name: Show available SDKs
-        run: xcodebuild -showsdks
-
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate project
-        working-directory: ios
-        run: xcodegen generate
-
-      # A generic destination rather than a named device: runner images churn
-      # their simulator list, and "iPhone 15" disappearing should not be what
-      # breaks the build.
-      - name: Build
-        working-directory: ios
-        run: |
-          set -o pipefail
-          xcodebuild build \
-            -project PulsePlan.xcodeproj \
-            -scheme PulsePlan \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO \
-            | tee build.log
-
-      - name: Upload build log
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
-          name: build-log
-          path: ios/build.log
-
-      # Pick a real device by name rather than hard-coding one: runner images
-      # rotate their simulator list, and "iPhone 16 disappeared" should not be
-      # what breaks this.
-      - name: Choose a simulator
-        id: sim
-        run: |
-          NAME=$(xcrun simctl list devices available --json \
-            | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];print(next(x['name'] for rs in d.values() for x in rs if x['name'].startswith('iPhone')))")
-          echo "Using $NAME"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
-
-      - name: Screenshot the flow
-        working-directory: ios
-        run: |
-          set -o pipefail
-          xcodebuild test \
-            -project PulsePlan.xcodeproj \
-            -scheme PulsePlan \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}" \
-            -resultBundlePath TestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO \
-            | tee uitest.log
-
-      # The .xcresult is a bundle; pull the PNGs out so they can be viewed
-      # without Xcode.
-      - name: Extract screenshots
-        if: always()
-        working-directory: ios
-        run: |
-          mkdir -p screenshots
-          if [ -d TestResults.xcresult ]; then
-            xcrun xcresulttool export attachments \
-              --path TestResults.xcresult \
-              --output-path screenshots 2>/dev/null || \
-            echo "::warning::could not export attachments"
-          fi
-          ls -R screenshots || true
-
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: |
-            ios/screenshots
-            ios/uitest.log
-          if-no-files-found: warn
+          xcode-version: latest-stable
+      - name: Show toolchain
+        run: xcodebuild -version
+      - name: Test and build (Xcode 26 or newer)
+        run: bash scripts/check.sh

@@ -2,14 +2,6 @@ import Combine
 import EventKit
 import Foundation
 
-struct CalendarEvent: Identifiable, Equatable {
-    let id: String
-    let title: String
-    let startDate: Date
-    let endDate: Date
-    let isAllDay: Bool
-}
-
 @MainActor
 final class CalendarStore: ObservableObject {
     @Published private(set) var events: [CalendarEvent] = []
@@ -103,7 +95,7 @@ final class CalendarStore: ObservableObject {
         let now = now ?? currentDate
         if isDemo {
             let end = Calendar.current.startOfDay(for: currentDate).addingTimeInterval(24 * 60 * 60)
-            return Self.nextReviewableBreak(now: now, before: end,
+            return CalendarAvailability.nextReviewableBreak(now: now, before: end,
                                             busy: events.map { DateInterval(start: $0.startDate, end: $0.endDate) })
         }
         guard EKEventStore.authorizationStatus(for: .event) == .fullAccess,
@@ -111,39 +103,7 @@ final class CalendarStore: ObservableObject {
                                                 to: Calendar.current.startOfDay(for: now)) else { return nil }
         let limit = min(dayEnd, now.addingTimeInterval(8 * 60 * 60))
         let busy = busyIntervals(from: now, to: limit)
-        return Self.nextReviewableBreak(now: now, before: limit, busy: busy)
-    }
-
-    /// A current meeting supplies the review window; its exact end is eligible.
-    /// When already free, leave five minutes to review and confirm the break.
-    nonisolated static func nextReviewableBreak(now: Date, before limit: Date, busy: [DateInterval]) -> DateInterval? {
-        let currentlyBusy = busy.contains { $0.start <= now && $0.end > now }
-        let earliestStart = currentlyBusy ? now : now.addingTimeInterval(5 * 60)
-        return nextAvailableSlot(after: earliestStart, before: limit, busy: busy)
-    }
-
-    /// Pure gap search: touching event boundaries are allowed; overlapping busy intervals are skipped.
-    nonisolated static func nextAvailableSlot(
-        after now: Date,
-        before limit: Date,
-        busy: [DateInterval],
-        duration: TimeInterval = 15 * 60
-    ) -> DateInterval? {
-        guard duration.isFinite, duration > 0,
-              now.timeIntervalSinceReferenceDate.isFinite,
-              limit.timeIntervalSinceReferenceDate.isFinite,
-              now < limit else { return nil }
-        // The caller already includes review time. Keep meeting boundaries exact:
-        // a meeting ending at noon leaves a break available at noon, not 12:01.
-        var candidate = now
-        for interval in busy.sorted(by: { $0.start < $1.start }) {
-            guard interval.end > candidate, interval.start < limit else { continue }
-            if candidate.addingTimeInterval(duration) <= interval.start { break }
-            candidate = interval.end
-        }
-        let end = candidate.addingTimeInterval(duration)
-        guard end <= limit else { return nil }
-        return DateInterval(start: candidate, end: end)
+        return CalendarAvailability.nextReviewableBreak(now: now, before: limit, busy: busy)
     }
 
     /// Call only after the user reviews and confirms the proposed calendar entry.
