@@ -21,33 +21,30 @@ random.seed(42)  # reproducible mock data — same run every time you demo
 # resolve from this file's location so the script works regardless of cwd.
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
-DAY_START = datetime(2026, 9, 19, 9, 0)
-DAY_END = datetime(2026, 9, 19, 17, 0)
+DAY_START = datetime(2026, 9, 21, 9, 0)
+DAY_END = datetime(2026, 9, 21, 17, 0)
 
 # ---- 1. Calendar ----
 # back_to_back = True if it starts within 5 min of the previous meeting ending
 CALENDAR_RAW = [
-    ("09:00", "09:30", "Standup", "team"),
-    # 30-min gap here (recovery time)
-    ("10:00", "11:00", "Design Review", "high_focus"),
-    ("11:00", "12:00", "Client Call", "high_stakes"),
-    # lunch gap
-    ("13:00", "13:30", "1:1 with Manager", "one_on_one"),
-    ("13:30", "14:30", "Sprint Planning", "high_focus"),
-    ("14:30", "15:00", "Cross-team Sync", "team"),
-    # 15-min gap (recovery starts here)
-    ("15:15", "16:15", "Deep Work Block", "focus_time"),
-    ("16:15", "16:45", "All-Hands", "team"),
+    ("09:00", "10:00", "Planning", "team"),
+    ("10:00", "11:00", "Focus", "focus_time"),
+    ("11:00", "12:00", "Design Review", "high_focus"),
+    # The open 12:00-12:30 slot is the safe, user-controlled recovery opportunity.
+    ("12:30", "13:00", "Lunch", "personal"),
+    ("13:00", "15:00", "Deep Work", "focus_time"),
+    ("15:00", "16:00", "Team Sync", "team"),
+    ("16:00", "17:00", "Wrap-up", "team"),
 ]
 
-def parse(t):
+def parse_demo_time(t):
     h, m = map(int, t.split(":"))
-    return datetime(2026, 9, 19, h, m)
+    return datetime(2026, 9, 21, h, m)
 
 calendar = []
 prev_end = None
 for start_s, end_s, title, mtype in CALENDAR_RAW:
-    start, end = parse(start_s), parse(end_s)
+    start, end = parse_demo_time(start_s), parse_demo_time(end_s)
     back_to_back = prev_end is not None and (start - prev_end) <= timedelta(minutes=5)
     calendar.append({
         "title": title,
@@ -62,14 +59,14 @@ with open(DATA_DIR / "calendar.json", "w") as f:
     json.dump(calendar, f, indent=2)
 
 # ---- 2. Biometrics ----
-# Baseline HR ~68bpm resting, HRV ~65ms (arbitrary but realistic-looking units).
-# The scripted stress run is 13:00-15:00 (three back-to-back meetings, no gap):
-#   HRV declines ~2ms per 10 min of sustained back-to-back load, HR climbs slightly.
-# Outside that window, values drift gently around baseline with small noise.
+# Baseline HR ~70bpm and HRV ~65ms. The synthetic showcase peaks during
+# Design Review (11:00-12:00): HR rises into the low 90s while HRV falls into
+# the low 40s, then both recover during the open 12:00-12:30 calendar slot.
+# It is designed to be visually legible, not to simulate or diagnose stress.
 
-STRESS_WINDOW_START = parse("13:00")
-STRESS_WINDOW_END = parse("15:00")
-BASELINE_HR = 68
+STRESS_WINDOW_START = parse_demo_time("11:00")
+STRESS_WINDOW_END = parse_demo_time("12:00")
+BASELINE_HR = 70
 BASELINE_HRV = 65
 
 rows = []
@@ -82,14 +79,14 @@ while t <= DAY_END:
     if in_stress_window:
         minutes_into_stress += 1
         # steady decline, caps out so it doesn't go unrealistic
-        hrv_drop = min(minutes_into_stress * 0.18, 22)
-        hr_rise = min(minutes_into_stress * 0.09, 11)
+        hrv_drop = min(minutes_into_stress * 0.38, 23)
+        hr_rise = min(minutes_into_stress * 0.36, 22)
     else:
         # recovery: HRV eases back toward baseline once out of the window
         if minutes_into_stress > 0 and t > STRESS_WINDOW_END:
             minutes_since_recovery = (t - STRESS_WINDOW_END).seconds // 60
-            hrv_drop = max(22 - minutes_since_recovery * 1.6, 0)
-            hr_rise = max(11 - minutes_since_recovery * 0.8, 0)
+            hrv_drop = max(23 - minutes_since_recovery * 1.3, 0)
+            hr_rise = max(22 - minutes_since_recovery * 1.1, 0)
         else:
             hrv_drop = 0
             hr_rise = 0
@@ -101,10 +98,14 @@ while t <= DAY_END:
     t += timedelta(minutes=1)
 
 with open(DATA_DIR / "biometrics.csv", "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=["timestamp", "heart_rate", "hrv"])
+    writer = csv.DictWriter(
+        f,
+        fieldnames=["timestamp", "heart_rate", "hrv"],
+        lineterminator="\n",
+    )
     writer.writeheader()
     writer.writerows(rows)
 
 print(f"Generated {len(calendar)} calendar events -> calendar.json")
 print(f"Generated {len(rows)} biometric readings -> biometrics.csv")
-print("Scripted stress episode: 13:00-15:00 (Sprint Planning + Cross-team Sync run)")
+print("Synthetic showcase signal: 11:00-12:00 (Design Review), then recovery in the open 12:00-12:30 slot")

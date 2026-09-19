@@ -41,10 +41,9 @@ MODEL_FALLBACK = "gemini-3.1-flash-lite"
 # spec as the prompt (specific, references the actual pattern, actionable
 # solo) so a fallback demo still shows the right *kind* of output.
 FALLBACK_SUGGESTION = (
-    "Your HRV stayed depressed through the Sprint Planning -> Cross-team Sync "
-    "run with no gap between them. Block the first 15 minutes of your Deep Work "
-    "Block at 15:15 as genuine decompression before you start focused work — "
-    "it's your own time, so you can move it without touching anyone else's calendar."
+    "Your readings changed during Design Review, and you have a clear 12:00-12:30 "
+    "gap before Lunch. Consider protecting 12:00-12:15 as a private reset before "
+    "your afternoon work."
 )
 
 
@@ -84,7 +83,8 @@ def write_output(baseline, episodes):
         "baseline_hrv": round(baseline, 1),
         "threshold_hrv": round(baseline * HRV_DROP_THRESHOLD, 1),
         "threshold_pct": HRV_DROP_THRESHOLD,
-        "model": MODEL,
+        "is_synthetic": True,
+        "model": next((episode["source"] for episode in episodes if episode["source"] != "fallback"), "fallback"),
         "episodes": episodes,
     }
     with open(DATA_DIR / "suggestions.json", "w") as f:
@@ -124,7 +124,18 @@ def main():
                 text, source = FALLBACK_SUGGESTION, "fallback"
                 print(f"  ! Gemini call failed ({e}) — using fallback text", file=sys.stderr)
 
-        results.append({**episode, "suggestion": text, "source": source})
+        results.append({
+            **episode,
+            "suggestion": text,
+            "source": source,
+            "is_synthetic": True,
+            "proposed_break": {
+                "title": "Private reset",
+                "start": "2026-09-21T12:00:00",
+                "end": "2026-09-21T12:15:00",
+                "reason": "Open time after Design Review and before Lunch",
+            },
+        })
 
         window = f"{episode['start'][11:16]}-{episode['end'][11:16]}"
         print(f"Episode {window} ({episode['duration_minutes']} min) [{source}]")

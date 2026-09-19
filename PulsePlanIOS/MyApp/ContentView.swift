@@ -13,6 +13,16 @@ struct ContentView: View {
     }
 
     var body: some View {
+        TabView {
+            liveTab
+                .tabItem { Label("Live", systemImage: "heart.text.square") }
+            ExampleDayView()
+                .tabItem { Label("Example day", systemImage: "calendar") }
+        }
+        .tint(Color(red: 0.14, green: 0.36, blue: 0.27))
+    }
+
+    private var liveTab: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Image(systemName: "heart.text.square.fill").font(.system(size: 52)).foregroundStyle(.red)

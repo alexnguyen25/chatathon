@@ -1,18 +1,16 @@
 [
   {
-    "start": "2026-09-19T14:15:00",
-    "end": "2026-09-19T15:07:00",
-    "duration_minutes": 52,
+    "start": "2026-09-21T11:38:00",
+    "end": "2026-09-21T12:09:00",
+    "duration_minutes": 31,
     "meetings_in_window": [
-      "Sprint Planning",
-      "Cross-team Sync"
+      "Design Review"
     ],
     "meeting_types": [
-      "team",
       "high_focus"
     ],
     "any_back_to_back": true,
-    "next_event": "Deep Work Block",
-    "next_event_start": "2026-09-19T15:15:00"
+    "next_event": "Lunch",
+    "next_event_start": "2026-09-21T12:30:00"
   }
 ]
