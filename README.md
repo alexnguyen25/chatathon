@@ -1,2 +1,0 @@
-# chatathon
-hackathon for nuai
