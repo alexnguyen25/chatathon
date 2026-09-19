@@ -4,7 +4,47 @@ import StressCore
 // Terminal rendering of the scripted day: the same data, detector, and prompt
 // the SwiftUI screen uses, minus the parts that need an Apple SDK.
 
-let day = SyntheticDay.day()
+// `--pipeline` runs the Swift detector over the repository's own
+// data/biometrics.csv + data/calendar.json using the same parameters as
+// pipeline/analyze_stress.py, so the two implementations can be compared
+// side by side. Without it, the scripted mockup day is used.
+let usePipeline = CommandLine.arguments.contains("--pipeline")
+
+func pipelineDay() throws -> DayModel {
+    var root = URL(fileURLWithPath: #filePath)
+    for _ in 0 ..< 5 { root.deleteLastPathComponent() }
+    let dataDir = root.appendingPathComponent("data")
+
+    let samples = try PipelineData.biometrics(
+        fromCSV: String(
+            contentsOf: dataDir.appendingPathComponent("biometrics.csv"),
+            encoding: .utf8
+        )
+    )
+    let schedule = try PipelineData.calendar(
+        fromJSON: Data(contentsOf: dataDir.appendingPathComponent("calendar.json"))
+    )
+    let detection = StressDetector.analyze(
+        samples: samples, schedule: schedule, configuration: .pipelineParity
+    )
+    return DayModel(
+        label: "Sat, Sep 19 (pipeline fixtures)",
+        samples: samples,
+        schedule: schedule,
+        detection: detection,
+        breakSuggestion: BreakFinder.suggest(
+            samples: samples, schedule: schedule, detection: detection
+        )
+    )
+}
+
+let day: DayModel
+do {
+    day = usePipeline ? try pipelineDay() : SyntheticDay.day()
+} catch {
+    print("Could not load pipeline data: \(error.localizedDescription)")
+    exit(1)
+}
 let samples = day.samples
 let result = day.detection
 
@@ -82,7 +122,7 @@ for c in 0 ..< columns {
 // MARK: - Output
 
 print("")
-print("  MEETING-LOAD STRESS MONITOR — scripted Tuesday, synthetic data")
+print("  MEETING-LOAD STRESS MONITOR — \(day.label), synthetic data")
 print("  " + String(repeating: "═", count: columns))
 print("  " + meetingLabels.joined())
 print("  " + meetingStrip.joined())
@@ -95,7 +135,11 @@ for r in 0 ..< rows {
     else if r == thresholdRow { axis = "\(Int(result.threshold.rounded()))" }
     else { axis = "  " }
     let suffix: String
-    if r == baselineRow { suffix = "  <- baseline (median of first 30 min)" }
+    if r == baselineRow {
+        suffix = usePipeline
+            ? "  <- baseline (mean of first 60 min, pipeline parity)"
+            : "  <- baseline (median of first 30 min)"
+    }
     else if r == thresholdRow { suffix = "  <- threshold, 20% below baseline" }
     else { suffix = "" }
     print(String(format: "%2@", axis as NSString) + "|" + canvas[r].joined() + suffix)
@@ -161,7 +205,7 @@ if let suggestion = day.breakSuggestion {
 let context = SuggestionContext(
     employeeFirstName: "Sam",
     remainingEvents: day.schedule.events.filter { $0.start > episode.endMinute },
-    dayLabel: SyntheticDay.dayLabel,
+    dayLabel: day.label,
     breakSuggestion: day.breakSuggestion
 )
 
@@ -189,7 +233,18 @@ let service: SuggestionProviding = keyPresent
     ? AnthropicSuggestionService(keyStore: EnvKeyStore())
     : StubSuggestionService(delay: .milliseconds(200))
 
-print("  SUGGESTION  (\(keyPresent ? "live Anthropic API" : "stub — set ANTHROPIC_API_KEY for a live call"))")
+// The stub's text is canned for the scripted mockup day, so in --pipeline
+// mode it describes a different day than the one just analysed. Say so
+// rather than letting it read as output derived from the data above.
+let suggestionSource: String
+if keyPresent {
+    suggestionSource = "live Anthropic API"
+} else if usePipeline {
+    suggestionSource = "stub — canned for the scripted day, NOT these fixtures"
+} else {
+    suggestionSource = "stub — set ANTHROPIC_API_KEY for a live call"
+}
+print("  SUGGESTION  (\(suggestionSource))")
 print("  " + String(repeating: "─", count: 56))
 
 let semaphore = DispatchSemaphore(value: 0)
