@@ -105,11 +105,22 @@ struct DayTimeline: View {
     // 580 pushed the suggestion card off-screen on a 6.1" phone. The whole
     // point of this screen is seeing the day *and* the suggested action
     // together, so the timeline yields the height.
-    @ScaledMetric(relativeTo: .subheadline) private var height: CGFloat = 440
+    @ScaledMetric(relativeTo: .subheadline) private var height: CGFloat = 380
     // Scaled: at accessibility sizes a fixed 52 wrapped "Time" to "Tim/e"
-    // and "9 AM" onto two lines.
+    // and "9 AM" onto two lines. Capped below, or the side columns eat the
+    // calendar entirely.
     @ScaledMetric(relativeTo: .subheadline) private var timeColumnWidth: CGFloat = 54
     @ScaledMetric(relativeTo: .subheadline) private var chartWidth: CGFloat = 132
+
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    /// At accessibility text sizes three columns cannot share a phone width —
+    /// scaling the side columns squeezed the calendar to a single character
+    /// per line and the events vanished. The calendar is the actionable half,
+    /// so the chart yields and its numbers are stated in text below instead.
+    private var showsChart: Bool { !typeSize.isAccessibilitySize }
+    private var effectiveTimeWidth: CGFloat { min(timeColumnWidth, 104) }
+    private var effectiveChartWidth: CGFloat { min(chartWidth, 150) }
 
     private let bpmLow = 52.0
     private let bpmHigh = 108.0
@@ -139,9 +150,16 @@ struct DayTimeline: View {
             HStack(alignment: .top, spacing: 0) {
                 timeColumn
                 calendarColumn
-                heartRateColumn
+                if showsChart { heartRateColumn }
             }
             .frame(height: height)
+
+            if !showsChart, let suggestion = model.suggestion {
+                Text("Heart rate \(suggestion.comparison.recentLabel) BPM during the last hour, against \(suggestion.comparison.earlierLabel) earlier.")
+                    .font(.subheadline)
+                    .foregroundStyle(DS.Palette.inkSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
@@ -149,29 +167,36 @@ struct DayTimeline: View {
         HStack(alignment: .bottom, spacing: 0) {
             Text("Time")
                 .font(.subheadline)
+                .lineLimit(1)
                 .foregroundStyle(DS.Palette.inkSecondary)
-                .frame(width: timeColumnWidth, alignment: .leading)
+                .frame(width: effectiveTimeWidth, alignment: .leading)
             Text("Calendar")
                 .font(.subheadline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 .foregroundStyle(DS.Palette.inkSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Heart rate (BPM)")
-                    .font(.subheadline)
-                    .foregroundStyle(DS.Palette.inkSecondary)
-                GeometryReader { geometry in
-                    ZStack(alignment: .topLeading) {
-                        ForEach(bpmTicks, id: \.self) { tick in
-                            Text("\(tick)")
-                                .font(.caption.monospacedDigit())
-                                .foregroundStyle(DS.Palette.inkTertiary)
-                                .offset(x: x(forBPM: Double(tick), in: geometry.size.width) - 9)
+            if showsChart {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Heart rate (BPM)")
+                        .font(.subheadline)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .foregroundStyle(DS.Palette.inkSecondary)
+                    GeometryReader { geometry in
+                        ZStack(alignment: .topLeading) {
+                            ForEach(bpmTicks, id: \.self) { tick in
+                                Text("\(tick)")
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(DS.Palette.inkTertiary)
+                                    .offset(x: x(forBPM: Double(tick), in: geometry.size.width) - 9)
+                            }
                         }
                     }
+                    .frame(height: 16)
                 }
-                .frame(height: 16)
+                .frame(width: effectiveChartWidth, alignment: .leading)
             }
-            .frame(width: chartWidth, alignment: .leading)
         }
     }
 
@@ -184,7 +209,7 @@ struct DayTimeline: View {
                     .offset(y: y(for: hour * 60) - 9)
             }
         }
-        .frame(width: timeColumnWidth, height: height, alignment: .topLeading)
+        .frame(width: effectiveTimeWidth, height: height, alignment: .topLeading)
     }
 
     private func hourLabel(_ hour: Int) -> String {
@@ -310,7 +335,7 @@ struct DayTimeline: View {
                 }
             }
         }
-        .frame(width: chartWidth, height: height)
+        .frame(width: effectiveChartWidth, height: height)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Heart rate through the day")
         .accessibilityValue(model.suggestion.map {
