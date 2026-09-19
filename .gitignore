@@ -159,3 +159,4 @@ ios/Config/Secrets.xcconfig
 __pycache__/
 *.pyc
 .env
+ci-artifacts/

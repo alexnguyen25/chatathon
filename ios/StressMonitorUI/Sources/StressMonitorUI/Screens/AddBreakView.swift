@@ -45,6 +45,9 @@ public struct AddBreakView: View {
         }
         .background(DS.Palette.canvas.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
+        // Custom BackLabel in the toolbar; without this the system chevron
+        // renders too and the screen shows two back buttons.
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 BackLabel("Suggestion") { model.path.removeLast() }

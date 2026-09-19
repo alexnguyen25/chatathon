@@ -41,6 +41,22 @@ public struct AppShell: View {
             .tag(Tab.exampleDay)
         }
         .tint(DS.Palette.greenInk)
+        .preferredColorScheme(Self.uiTestColorScheme)
+    }
+
+    /// Test-only hook.
+    ///
+    /// `-UIUserInterfaceStyle Dark` as a launch *argument* does nothing — it
+    /// is an Info.plist key, not a runtime flag — so the first dark-mode
+    /// screenshot silently captured light mode. A launch environment variable
+    /// the app reads is the honest way to make the UI test able to ask for
+    /// dark. Returns nil in normal use, leaving the system in charge.
+    static var uiTestColorScheme: ColorScheme? {
+        switch ProcessInfo.processInfo.environment["UI_TEST_COLOR_SCHEME"] {
+        case "dark":  return .dark
+        case "light": return .light
+        default:      return nil
+        }
     }
 }
 

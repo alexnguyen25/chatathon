@@ -12,7 +12,9 @@ public struct LiveHeartRateView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DS.Space.xl) {
+            // xl (24) pushed "End collection" below the fold on a 6.1" phone.
+            // The primary action has to be reachable without scrolling.
+            VStack(alignment: .leading, spacing: DS.Space.l) {
                 VStack(alignment: .leading, spacing: DS.Space.m) {
                     Wordmark()
                     Text("Live heart rate").displayTitleStyle()
@@ -68,9 +70,8 @@ public struct LiveHeartRateView: View {
     private var readout: some View {
         VStack(spacing: DS.Space.xs) {
             Image(systemName: "heart")
-                .font(.system(size: 54, weight: .regular))
+                .font(.system(size: 46, weight: .regular))
                 .foregroundStyle(DS.Palette.signal)
-                .padding(.bottom, DS.Space.s)
 
             // tokens.typography.metric: 88 / 600 / monospacedDigits
             Text("\(model.currentBPM)")

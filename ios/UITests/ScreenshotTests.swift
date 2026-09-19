@@ -98,7 +98,10 @@ final class ScreenshotTests: XCTestCase {
     /// looked at.
     func testDarkModeAndLargeText() {
         let app = XCUIApplication()
-        app.launchArguments += ["-UIUserInterfaceStyle", "Dark"]
+        // Launch *environment*, not arguments: -UIUserInterfaceStyle is an
+        // Info.plist key and is ignored at launch, which is why the first
+        // version of this test silently captured light mode.
+        app.launchEnvironment["UI_TEST_COLOR_SCHEME"] = "dark"
         app.launchArguments += [
             "-UIPreferredContentSizeCategoryName",
             "UICTContentSizeCategoryAccessibilityL"

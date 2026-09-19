@@ -16,7 +16,12 @@ public struct DayView: View {
                     SampleDataPill()
                 }
                 DayTimeline(model: model)
-                if model.suggestion != nil {
+                // Once the break is on the calendar the card must stop
+                // offering to add it — leaving "Review suggestion" there
+                // invites adding the same break twice.
+                if model.addedEvent != nil {
+                    addedCard
+                } else if model.suggestion != nil {
                     suggestionCard
                 }
             }
@@ -61,6 +66,27 @@ public struct DayView: View {
         .padding(DS.Space.l)
         .sageCard()
     }
+
+    private var addedCard: some View {
+        HStack(alignment: .center, spacing: DS.Space.l) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 30))
+                .foregroundStyle(DS.Palette.green)
+                .frame(width: 48)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Break added").rowTitleStyle()
+                if let added = model.addedEvent {
+                    Text("\(clockLabel(forMinuteOfDay: added.start)) – \(clockLabel(forMinuteOfDay: added.end)) · Example calendar")
+                        .font(.subheadline)
+                        .foregroundStyle(DS.Palette.inkSecondary)
+                }
+            }
+            Spacer(minLength: 0)
+            TextAction("Undo") { model.undoAdd() }
+        }
+        .padding(DS.Space.l)
+        .sageCard()
+    }
 }
 
 /// Time, calendar, and heart rate share one vertical axis.
@@ -75,9 +101,15 @@ struct DayTimeline: View {
 
     private let dayStart = SyntheticDay.dayStartMinute
     private let dayEnd = SyntheticDay.dayEndMinute
-    private let height: CGFloat = 580
-    private let timeColumnWidth: CGFloat = 52
-    private let chartWidth: CGFloat = 132
+
+    // 580 pushed the suggestion card off-screen on a 6.1" phone. The whole
+    // point of this screen is seeing the day *and* the suggested action
+    // together, so the timeline yields the height.
+    @ScaledMetric(relativeTo: .subheadline) private var height: CGFloat = 440
+    // Scaled: at accessibility sizes a fixed 52 wrapped "Time" to "Tim/e"
+    // and "9 AM" onto two lines.
+    @ScaledMetric(relativeTo: .subheadline) private var timeColumnWidth: CGFloat = 54
+    @ScaledMetric(relativeTo: .subheadline) private var chartWidth: CGFloat = 132
 
     private let bpmLow = 52.0
     private let bpmHigh = 108.0
@@ -100,7 +132,9 @@ struct DayTimeline: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DS.Space.s) {
+        // The 09:00 row sits at y == 0, so without a real gap here the
+        // "Time" heading and the "9 AM" label collide.
+        VStack(alignment: .leading, spacing: DS.Space.l) {
             columnHeadings
             HStack(alignment: .top, spacing: 0) {
                 timeColumn
@@ -196,7 +230,12 @@ struct DayTimeline: View {
     private func eventBlock(_ event: CalendarEvent, width: CGFloat) -> some View {
         let isFlagged = event.id == model.flaggedEventID
         let isAdded = event.id == model.addedEvent?.id
-        let blockHeight = max(y(for: event.end) - y(for: event.start) - 6, 22)
+        // A 15-minute block is ~14pt at this scale, which sliced "Take a
+        // break" in half. The floor has to clear a line of text, and short
+        // blocks centre it rather than pinning it to the top.
+        let naturalHeight = y(for: event.end) - y(for: event.start) - 6
+        let blockHeight = max(naturalHeight, 30)
+        let isShort = naturalHeight < 44
 
         return HStack(spacing: 0) {
             // Terracotta marker: the calendar entry the readings changed
@@ -211,15 +250,25 @@ struct DayTimeline: View {
                 .font(.system(.subheadline, weight: isAdded ? .semibold : .regular))
                 // tokens.semantics.savedEvent: "Solid green with text label."
                 .foregroundStyle(isAdded ? Color.white : DS.Palette.ink)
+                .lineLimit(2)
+                // Shrink before truncating: at accessibility sizes this was
+                // rendering "Design r…", which is worse than slightly small.
+                .minimumScaleFactor(0.7)
                 .padding(.leading, isFlagged ? DS.Space.m : DS.Space.l)
-                .padding(.top, DS.Space.m)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(.trailing, DS.Space.s)
+                .padding(.vertical, isShort ? 0 : DS.Space.m)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: isShort ? .leading : .topLeading
+                )
         }
         .frame(width: width - DS.Space.s, height: blockHeight, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: DS.Radius.block, style: .continuous)
                 .fill(isAdded ? DS.Palette.green : DS.calendarFill(flagged: false))
         )
+        .clipShape(RoundedRectangle(cornerRadius: DS.Radius.block, style: .continuous))
         .offset(y: y(for: event.start) + 3)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(event.title), \(event.timeRangeLabel)")
