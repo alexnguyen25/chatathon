@@ -1,0 +1,60 @@
+# XcodeGen spec. The repository has no .xcodeproj checked in — it is generated
+# from this file, which keeps the project structure reviewable as text and
+# avoids merge conflicts in a pbxproj nobody can read.
+#
+#   brew install xcodegen && cd ios && xcodegen generate
+name: PulsePlan
+
+options:
+  bundleIdPrefix: com.pulseplan
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  StressCore:
+    path: StressCore
+  StressMonitorUI:
+    path: StressMonitorUI
+
+targets:
+  PulsePlan:
+    type: application
+    platform: iOS
+    sources:
+      - path: App/Sources
+    configFiles:
+      Debug: Config/Base.xcconfig
+      Release: Config/Base.xcconfig
+    settings:
+      base:
+        INFOPLIST_FILE: App/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+    dependencies:
+      - package: StressCore
+        product: StressCore
+      - package: StressMonitorUI
+        product: StressMonitorUI
+
+  # Exists to produce screenshots in CI, not to assert behaviour. Nobody on
+  # this project has a Mac, so this is the only way the screens get looked at.
+  PulsePlanUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: PulsePlan
+    settings:
+      base:
+        TEST_TARGET_NAME: PulsePlan
+
+schemes:
+  PulsePlan:
+    build:
+      targets:
+        PulsePlan: all
+        PulsePlanUITests: [test]
+    test:
+      targets:
+        - PulsePlanUITests

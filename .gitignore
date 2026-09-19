@@ -144,6 +144,15 @@ vite.config.ts.timestamp-*
 
 # Swift Package Manager build products
 .build/
+# --- iOS / Swift ---
+.swiftpm/
+xcuserdata/
+.DS_Store
+DerivedData/
+*.xcuserstate
+
+# Real key never gets committed; Secrets.xcconfig.example is the template.
+Secrets.xcconfig
 
 # Python
 .venv/
