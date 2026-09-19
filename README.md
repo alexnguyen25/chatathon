@@ -1,16 +1,17 @@
-# PulsePlan — AirPods heart-rate POC
+# PulsePlan
 
 PulsePlan is a private, on-device health check-in: it reads today’s calendar
-after permission and starts a voluntary HealthKit walking workout to display
+after permission and starts a voluntary HealthKit focus session to display
 live heart rate. It is deliberately not an employee-surveillance or
 stress-diagnosis tool.
 
-## What the POC proves
+## What this MVP proves
 
 - A supported iPhone app can request HealthKit access and read live BPM during
   an active workout.
 - The app can request calendar access separately and list today’s events.
-- The app retains an in-session baseline and displays the current difference.
+- The app saves average and peak BPM locally for each focus session.
+- The deterministic demo pipeline produces calendar-aware, non-medical planning suggestions from synthetic data.
 - The measurement remains on-device; there is no backend or manager-facing
   dashboard.
 
@@ -29,9 +30,9 @@ watch as the highest-confidence source.
 4. Pair and wear compatible AirPods Pro 3 and enable their heart-rate feature.
 5. Run the app and tap **Connect calendar** to grant or decline calendar
    access independently.
-6. Tap **Allow Health access**, then **Start measurement walk**.
+6. Tap **Allow Health access**, choose an optional Calendar context, then **Start focus session**.
    The live BPM value and its delta from the initial three-sample baseline will
-   update as HealthKit delivers samples. Tap **End measurement** to finish the
+   update as HealthKit delivers samples. Tap **End session** to finish the
    voluntary workout.
 
 The Simulator can compile and present the interface, but it cannot validate a

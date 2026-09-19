@@ -144,3 +144,9 @@ vite.config.ts.timestamp-*
 
 # Swift Package Manager build products
 .build/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.env

@@ -1,0 +1,26 @@
+{
+  "baseline_hrv": 64.8,
+  "threshold_hrv": 51.8,
+  "threshold_pct": 0.8,
+  "model": "gemini-3-flash-preview",
+  "episodes": [
+    {
+      "start": "2026-09-19T14:15:00",
+      "end": "2026-09-19T15:07:00",
+      "duration_minutes": 52,
+      "meetings_in_window": [
+        "Sprint Planning",
+        "Cross-team Sync"
+      ],
+      "meeting_types": [
+        "team",
+        "high_focus"
+      ],
+      "any_back_to_back": true,
+      "next_event": "Deep Work Block",
+      "next_event_start": "2026-09-19T15:15:00",
+      "suggestion": "Your HRV stayed depressed through the Sprint Planning -> Cross-team Sync run with no gap between them. Block the first 15 minutes of your Deep Work Block at 15:15 as genuine decompression before you start focused work \u2014 it's your own time, so you can move it without touching anyone else's calendar.",
+      "source": "fallback"
+    }
+  ]
+}
