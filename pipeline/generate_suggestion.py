@@ -36,6 +36,9 @@ from analyze_stress import (
 MODEL = "gemini-3-flash-preview"
 # Free-tier fallback if the primary model's rate limit gets hit mid-demo.
 MODEL_FALLBACK = "gemini-3.1-flash-lite"
+# The app demo is local by default. A remote model can only be enabled
+# deliberately for synthetic fixtures with PULSEPLAN_ENABLE_REMOTE_SUGGESTIONS=1.
+USE_REMOTE_SUGGESTIONS = os.environ.get("PULSEPLAN_ENABLE_REMOTE_SUGGESTIONS") == "1"
 
 # Used only when the API is unreachable. Deliberately written to the same
 # spec as the prompt (specific, references the actual pattern, actionable
@@ -102,7 +105,9 @@ def main():
     client = None
     setup_error = None
     api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
+    if not USE_REMOTE_SUGGESTIONS:
+        setup_error = "remote suggestions are disabled for the local demo"
+    elif not api_key:
         setup_error = "GEMINI_API_KEY is not set"
     else:
         try:

@@ -1,5 +1,5 @@
 """
-Stage 1 (this file, no LLM needed): detect sustained stress windows from HRV
+Stage 1 (this file, no LLM needed): detect sustained change windows from HRV
 data and attach calendar context — back_to_back run, meeting types involved,
 what's coming up next. This is deterministic and cheap; don't waste LLM
 calls on detection.
@@ -86,8 +86,8 @@ def attach_calendar_context(window_start, window_end, calendar):
 def build_llm_prompt(episode):
     """This is the structured, low-token prompt to send to the LLM —
     features only, never the raw time series."""
-    return f"""You are a workplace wellbeing assistant. A sustained stress episode
-was detected from biometric data (not shown to you directly — only the summary below).
+    return f"""You are a daily planning assistant. A sustained change window
+appeared in synthetic biometric data (not shown to you directly — only the summary below).
 
 Episode summary:
 - Duration: {episode['duration_minutes']} minutes
@@ -97,7 +97,7 @@ Episode summary:
 - Next scheduled event: {episode['next_event']} at {episode['next_event_start']}
 
 Write ONE specific, actionable suggestion (1-2 sentences) for this person.
-Reference the actual meetings/pattern above, not generic wellness advice.
+Reference the actual schedule/pattern above, not generic wellness advice.
 Do not suggest anything requiring other people's calendars to change."""
 
 if __name__ == "__main__":
