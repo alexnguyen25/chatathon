@@ -259,7 +259,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "PulsePlan reads today’s calendar events only to provide private schedule context on this iPhone.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "PulsePlan reads your live workout heart rate to show a private on-device measurement.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "PulsePlan reads heart rate, heart-rate variability, resting heart rate, and sleep to provide private on-device planning context and optional break suggestions.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "PulsePlan saves the voluntary measurement workout to Apple Health.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -301,7 +301,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "PulsePlan reads today’s calendar events only to provide private schedule context on this iPhone.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "PulsePlan reads your live workout heart rate to show a private on-device measurement.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "PulsePlan reads heart rate, heart-rate variability, resting heart rate, and sleep to provide private on-device planning context and optional break suggestions.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "PulsePlan saves the voluntary measurement workout to Apple Health.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
