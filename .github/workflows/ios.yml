@@ -1,0 +1,58 @@
+name: iOS
+
+on:
+  push:
+    branches: [main, frontend]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # The detector. This job also runs locally on Windows — see
+  # ios/scripts/swift-env.ps1 — so a failure here is a real regression, not a
+  # platform difference.
+  core:
+    name: StressCore tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: swift test
+        working-directory: ios/StressCore
+        run: swift test --enable-code-coverage
+
+  # The part that cannot be verified off a Mac: SwiftUI and Swift Charts.
+  app:
+    name: Build app for iOS Simulator
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show available SDKs
+        run: xcodebuild -showsdks
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        working-directory: ios
+        run: xcodegen generate
+
+      # A generic destination rather than a named device: runner images churn
+      # their simulator list, and "iPhone 15" disappearing should not be what
+      # breaks the build.
+      - name: Build
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project PulsePlan.xcodeproj \
+            -scheme PulsePlan \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee build.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: ios/build.log

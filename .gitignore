@@ -141,3 +141,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# --- iOS / Swift ---
+ios/**/.build/
+ios/**/.swiftpm/
+ios/*.xcodeproj/
+ios/*.xcworkspace/
+ios/build.log
+DerivedData/
+*.xcuserstate
+
+# Real key never gets committed; Secrets.xcconfig.example is the template.
+ios/Config/Secrets.xcconfig
