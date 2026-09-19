@@ -13,8 +13,8 @@
         "Cross-team Sync"
       ],
       "meeting_types": [
-        "team",
-        "high_focus"
+        "high_focus",
+        "team"
       ],
       "any_back_to_back": true,
       "next_event": "Deep Work Block",

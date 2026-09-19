@@ -77,7 +77,10 @@ def attach_calendar_context(window_start, window_end, calendar):
     next_event = next((e for e in calendar if e["start"] >= window_end), None)
     return {
         "meetings_in_window": [e["title"] for e in overlapping],
-        "meeting_types": list({e["type"] for e in overlapping}),
+        # sorted(), not list(): set iteration order varies with Python's hash
+        # seed, so list() made detected_episodes.json churn on every run and
+        # produced spurious diffs. The Swift parity test reads this file.
+        "meeting_types": sorted({e["type"] for e in overlapping}),
         "any_back_to_back": any(e["back_to_back"] for e in overlapping),
         "next_event": next_event["title"] if next_event else None,
         "next_event_start": next_event["start"].isoformat() if next_event else None,
