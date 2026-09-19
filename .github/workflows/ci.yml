@@ -1,4 +1,4 @@
-name: iOS
+name: CI
 
 on:
   push:
@@ -7,6 +7,30 @@ on:
   workflow_dispatch:
 
 jobs:
+  # The Python pipeline is the other implementation of the same detection.
+  # StressCore's PipelineParityTests assert the Swift detector reproduces the
+  # episode this script publishes, so if the script's output changes without
+  # the fixtures changing, that test is what catches it.
+  pipeline:
+    name: Python pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Detection is dependency-free
+        run: python pipeline/analyze_stress.py
+
+      # detected_episodes.json is committed, and the Swift parity test reads
+      # it. Regenerating must not silently change it.
+      - name: Committed episodes are reproducible
+        run: |
+          git diff --exit-code -- data/detected_episodes.json \
+            || { echo "::error::analyze_stress.py no longer reproduces data/detected_episodes.json"; exit 1; }
+
+
   # The detector. This job also runs locally on Windows — see
   # ios/scripts/swift-env.ps1 — so a failure here is a real regression, not a
   # platform difference.

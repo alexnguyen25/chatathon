@@ -5,27 +5,55 @@
 /// much as to workload; everything here supports a voluntary suggestion and
 /// nothing here diagnoses anything.
 public struct DetectorConfiguration: Sendable, Hashable {
+
+    /// How the personal baseline is summarised.
+    public enum BaselineStatistic: Sendable, Hashable {
+        /// Resistant to artefacts — one bad reading in the window cannot move
+        /// it. The default, and what this project's spec calls for.
+        case median
+        /// What `pipeline/analyze_stress.py` uses. Kept so the Swift detector
+        /// can reproduce that script's published output exactly.
+        case mean
+    }
+
     /// Window from the first sample of the day used to establish the personal
-    /// baseline. The baseline is a median, not a mean, so a single artefact in
-    /// the first half hour cannot drag it.
+    /// baseline.
     public var baselineWindowMinutes: Int
     /// Fractional drop below baseline that counts as depressed. 0.20 == 20%.
     public var dropFraction: Double
     /// How long the drop must persist before it is an episode. This is the
     /// whole point of the detector: one bad minute is noise, not a signal.
     public var persistenceMinutes: Int
+    public var baselineStatistic: BaselineStatistic
 
     public init(
         baselineWindowMinutes: Int = 30,
         dropFraction: Double = 0.20,
-        persistenceMinutes: Int = 15
+        persistenceMinutes: Int = 15,
+        baselineStatistic: BaselineStatistic = .median
     ) {
         self.baselineWindowMinutes = baselineWindowMinutes
         self.dropFraction = dropFraction
         self.persistenceMinutes = persistenceMinutes
+        self.baselineStatistic = baselineStatistic
     }
 
+    /// Median of the first 30 minutes, 20% drop, 15-minute persistence.
     public static let `default` = DetectorConfiguration()
+
+    /// Exactly what `pipeline/analyze_stress.py` does: mean of the first 60
+    /// minutes, 20% drop, 20-minute persistence.
+    ///
+    /// These are **not** the same thresholds as `.default`, and the difference
+    /// is not cosmetic — see `PipelineParityTests`. This preset exists so the
+    /// two implementations can be checked against each other on the same data
+    /// while the team decides which set of numbers is the real one.
+    public static let pipelineParity = DetectorConfiguration(
+        baselineWindowMinutes: 60,
+        dropFraction: 0.20,
+        persistenceMinutes: 20,
+        baselineStatistic: .mean
+    )
 }
 
 /// A sustained-stress episode: a contiguous run of depressed HRV long enough to
@@ -103,8 +131,16 @@ public enum StressDetector {
     ) -> Double {
         guard let first = samples.first else { return 0 }
         let cutoff = first.minuteOfDay + configuration.baselineWindowMinutes
-        let window = samples.filter { $0.minuteOfDay < cutoff }.map(\.hrv)
-        return median(window.isEmpty ? samples.map(\.hrv) : window)
+        let filtered = samples.filter { $0.minuteOfDay < cutoff }.map(\.hrv)
+        let window = filtered.isEmpty ? samples.map(\.hrv) : filtered
+        guard !window.isEmpty else { return 0 }
+
+        switch configuration.baselineStatistic {
+        case .median:
+            return median(window)
+        case .mean:
+            return window.reduce(0, +) / Double(window.count)
+        }
     }
 
     /// Full-day analysis.

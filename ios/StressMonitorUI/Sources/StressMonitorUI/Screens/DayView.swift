@@ -36,6 +36,14 @@ public struct DayView: View {
                     .foregroundStyle(DS.Palette.ink)
                     .frame(width: 48)
                 VStack(alignment: .leading, spacing: 2) {
+                    // tokens.semantics.suggestion: "Sage with explicit
+                    // Suggested label." Nothing here should be mistaken for
+                    // something the app already did.
+                    Text("Suggested")
+                        .font(.caption.weight(.semibold))
+                        .tracking(0.6)
+                        .textCase(.uppercase)
+                        .foregroundStyle(DS.Palette.inkSecondary)
                     Text("Make room for a break")
                         .font(.system(.title3, weight: .bold))
                         .tracking(-0.3)
@@ -201,7 +209,8 @@ struct DayTimeline: View {
             }
             Text(event.title)
                 .font(.system(.subheadline, weight: isAdded ? .semibold : .regular))
-                .foregroundStyle(isAdded ? DS.Palette.greenInk : DS.Palette.ink)
+                // tokens.semantics.savedEvent: "Solid green with text label."
+                .foregroundStyle(isAdded ? Color.white : DS.Palette.ink)
                 .padding(.leading, isFlagged ? DS.Space.m : DS.Space.l)
                 .padding(.top, DS.Space.m)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -209,7 +218,7 @@ struct DayTimeline: View {
         .frame(width: width - DS.Space.s, height: blockHeight, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: DS.Radius.block, style: .continuous)
-                .fill(isAdded ? DS.Palette.sageDeep : DS.calendarFill(flagged: false))
+                .fill(isAdded ? DS.Palette.green : DS.calendarFill(flagged: false))
         )
         .offset(y: y(for: event.start) + 3)
         .accessibilityElement(children: .ignore)

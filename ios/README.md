@@ -96,6 +96,52 @@ Sits in gap   12:00–12:30    (30 min free, Design review → Lunch)
 Heart rate    84–96 bpm recently, 68–76 bpm earlier   (+18)
 ```
 
+## Relationship to `pipeline/`
+
+`pipeline/analyze_stress.py` implements the same detection in Python. Two
+implementations of one algorithm is a liability unless something keeps them
+honest, so `PipelineParityTests` loads the repository's own
+`data/biometrics.csv` and `data/calendar.json` and asserts the Swift detector
+reproduces the episode in `data/detected_episodes.json` exactly:
+
+```
+baseline 64.8 ms · threshold 51.8 ms · 14:15–15:06 · 52 min
+Sprint Planning, Cross-team Sync · next: Deep Work Block at 15:15
+```
+
+Python's `end` is the first *recovered* sample where Swift's is the last
+depressed one, so the timestamps read one minute apart for the same span.
+
+### Three divergences the team still needs to settle
+
+**1. Detector parameters disagree.** Same data, different answer:
+
+| | `pipeline/analyze_stress.py` | Swift default | `claude.md` |
+| --- | --- | --- | --- |
+| Baseline window | 60 min | 30 min | — |
+| Baseline statistic | mean | **median** | — |
+| Drop threshold | 20% | 20% | 20% |
+| Persistence | 20 min | **15 min** | **15 min** |
+
+`DetectorConfiguration.pipelineParity` reproduces the Python numbers, and
+`.default` is what the iOS spec and `claude.md` ask for. A median resists a
+single artefact in the baseline window where a mean does not, which is why the
+Swift default is what it is — but this should be one set of numbers, not two.
+
+**2. The scenarios do not match.** `data/calendar.json` is a Saturday
+19 September with Standup / Design Review / Client Call / Sprint Planning /
+Cross-team Sync, and its episode lands at 14:15. The design mockups show Monday
+21 September with Planning / Focus / Design review / Lunch, and the break at
+12:00. `SyntheticDay` follows the mockups, because the screens quote those
+times and ranges verbatim. Whichever day is the demo day, the other set of
+fixtures is currently dead weight.
+
+**3. Different LLM providers.** `pipeline/generate_suggestion.py` calls Gemini
+(`gemini-3-flash-preview`); the iOS app calls the Anthropic API
+(`claude-sonnet-4-5`), which is what the iOS brief specified. Both are behind a
+fallback so the demo survives without a key, but the two halves of the product
+are talking to different vendors.
+
 ## API key
 
 ```bash

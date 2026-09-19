@@ -72,8 +72,9 @@ public struct LiveHeartRateView: View {
                 .foregroundStyle(DS.Palette.signal)
                 .padding(.bottom, DS.Space.s)
 
+            // tokens.typography.metric: 88 / 600 / monospacedDigits
             Text("\(model.currentBPM)")
-                .readoutStyle(size: 92)
+                .readoutStyle(size: 88, weight: .semibold)
                 // The digits cross-fade in place rather than sliding, so a
                 // changing number never drags the eye off the value.
                 .contentTransition(.numericText())

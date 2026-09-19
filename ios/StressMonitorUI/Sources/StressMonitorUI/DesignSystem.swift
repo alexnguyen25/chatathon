@@ -11,27 +11,39 @@ import StressCore
 /// it becomes the cream-and-clay look this is trying not to be.
 public enum DS {
 
+    /// Light values are `docs/design/pulseplan-core/tokens.json` verbatim —
+    /// that file is the source of truth and these must not drift from it.
+    /// Dark values are derived here, because tokens.json is light-only.
     public enum Palette {
-        /// Warm paper, not white and not grey.
-        public static let canvas   = Color(light: 0xF3F2EE, dark: 0x14150F)
-        /// White cards sit *on* the paper — forms, lists, summaries.
+        /// tokens: color.canvas
+        public static let canvas   = Color(light: 0xF6F5F0, dark: 0x14150F)
+        /// tokens: color.surface — white cards sit *on* the paper.
         public static let surface  = Color(light: 0xFFFFFF, dark: 0x1D1F1B)
-        /// Pale sage. Informational blocks, calendar entries, the sample-data
-        /// pill. Never interactive on its own.
-        public static let sage     = Color(light: 0xE3EAE1, dark: 0x232D25)
-        public static let sageDeep = Color(light: 0xD3DED1, dark: 0x2C382E)
-        public static let hairline = Color(light: 0xE4E3DD, dark: 0x2D302A)
+        /// tokens: color.sage — informational blocks, calendar entries, the
+        /// sample-data pill. Never interactive on its own.
+        public static let sage     = Color(light: 0xE5ECE3, dark: 0x232D25)
+        /// Derived: sage one step down, for a saved/selected entry.
+        public static let sageDeep = Color(light: 0xD4DED1, dark: 0x2C382E)
+        /// tokens: color.divider
+        public static let hairline = Color(light: 0xD9DED7, dark: 0x2D302A)
 
-        public static let ink          = Color(light: 0x14160F, dark: 0xF1F2EC)
-        public static let inkSecondary = Color(light: 0x6B6F66, dark: 0xA7ADA2)
-        public static let inkTertiary  = Color(light: 0x92988C, dark: 0x7B8178)
+        /// tokens: color.text
+        public static let ink          = Color(light: 0x202C28, dark: 0xF1F2EC)
+        /// tokens: color.secondary
+        public static let inkSecondary = Color(light: 0x58635C, dark: 0xA7ADA2)
+        /// Derived: between secondary and divider, for the quietest labels.
+        public static let inkTertiary  = Color(light: 0x8C958E, dark: 0x7B8178)
 
-        /// Forest green. Primary actions, active tab, affirmative marks.
-        public static let green     = Color(light: 0x2C5F4A, dark: 0x4E9C7B)
-        public static let greenInk  = Color(light: 0x2C5F4A, dark: 0x6FBB97)
+        /// tokens: color.action — primary actions, active tab, affirmative
+        /// marks.
+        public static let green     = Color(light: 0x245C46, dark: 0x4E9C7B)
+        public static let greenInk  = Color(light: 0x245C46, dark: 0x6FBB97)
 
-        /// Terracotta. The biometric signal, and only that.
-        public static let signal    = Color(light: 0xC0604A, dark: 0xD98168)
+        /// tokens: color.heartRate. Per tokens.semantics: "Terracotta with BPM
+        /// units, never a stress severity indicator." It appears on the heart
+        /// glyph, the HR line, and the marker on the entry the readings
+        /// changed during — nowhere else.
+        public static let signal    = Color(light: 0xA55442, dark: 0xD98168)
     }
 
     /// Calendar entries are all one colour in the mockups — the calendar is
@@ -40,22 +52,32 @@ public enum DS {
         flagged ? Palette.sageDeep : Palette.sage
     }
 
+    /// tokens: layout
     public enum Radius {
-        public static let card: CGFloat = 14
+        /// tokens: layout.surfaceRadius
+        public static let card: CGFloat = 16
+        /// Derived: inline blocks inside a card sit one step tighter.
         public static let block: CGFloat = 10
-        public static let button: CGFloat = 12
+        /// tokens: layout.buttonRadius
+        public static let button: CGFloat = 14
         public static let tile: CGFloat = 18
     }
 
+    /// tokens: spacing
     public enum Space {
         public static let xs: CGFloat = 4
         public static let s: CGFloat = 8
         public static let m: CGFloat = 12
         public static let l: CGFloat = 16
         public static let xl: CGFloat = 24
-        public static let xxl: CGFloat = 36
+        public static let xxl: CGFloat = 32
 
-        public static let screenMargin: CGFloat = 20
+        /// tokens: layout.horizontalInset
+        public static let screenMargin: CGFloat = 24
+        /// tokens: layout.primaryButtonHeight
+        public static let primaryButtonHeight: CGFloat = 54
+        /// tokens: layout.minimumTouchTarget
+        public static let minimumTouchTarget: CGFloat = 44
     }
 
     /// Critically damped by default; bounce only where a gesture's momentum
@@ -69,6 +91,18 @@ public enum DS {
 }
 
 // MARK: - Type
+
+// tokens.typography maps almost exactly onto SwiftUI's semantic text styles,
+// so those are used rather than fixed point sizes. Fixed sizes would match the
+// token file to the point but would stop scaling with Dynamic Type, and
+// tokens.layout explicitly asks for system behaviour elsewhere.
+//
+//   token          size/weight   style used            delta
+//   title          32 / 700      .largeTitle .bold     34pt, +2
+//   section        22 / 600      .title2 .bold         exact
+//   body           17 / 400      .body                 exact
+//   caption        15 / 400      .subheadline          exact
+//   metric         88 / 600      .system(size: 88)     exact, see readoutStyle
 
 public extension View {
     /// Display titles in the mockups are heavy and tightly tracked. Tracking
@@ -165,7 +199,10 @@ public struct PrimaryButton: View {
                 .font(.system(.headline, weight: .semibold))
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, DS.Space.l)
+                // tokens: layout.primaryButtonHeight. `minHeight` rather than
+                // a fixed height so Dynamic Type can grow it — a hard 54 would
+                // clip the label at the larger accessibility sizes.
+                .frame(minHeight: DS.Space.primaryButtonHeight)
                 .background(
                     RoundedRectangle(cornerRadius: DS.Radius.button, style: .continuous)
                         .fill(DS.Palette.green)
