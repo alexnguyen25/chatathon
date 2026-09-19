@@ -80,3 +80,51 @@ jobs:
         with:
           name: build-log
           path: ios/build.log
+
+      # Pick a real device by name rather than hard-coding one: runner images
+      # rotate their simulator list, and "iPhone 16 disappeared" should not be
+      # what breaks this.
+      - name: Choose a simulator
+        id: sim
+        run: |
+          NAME=$(xcrun simctl list devices available --json \
+            | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];print(next(x['name'] for rs in d.values() for x in rs if x['name'].startswith('iPhone')))")
+          echo "Using $NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Screenshot the flow
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project PulsePlan.xcodeproj \
+            -scheme PulsePlan \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}" \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee uitest.log
+
+      # The .xcresult is a bundle; pull the PNGs out so they can be viewed
+      # without Xcode.
+      - name: Extract screenshots
+        if: always()
+        working-directory: ios
+        run: |
+          mkdir -p screenshots
+          if [ -d TestResults.xcresult ]; then
+            xcrun xcresulttool export attachments \
+              --path TestResults.xcresult \
+              --output-path screenshots 2>/dev/null || \
+            echo "::warning::could not export attachments"
+          fi
+          ls -R screenshots || true
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: |
+            ios/screenshots
+            ios/uitest.log
+          if-no-files-found: warn

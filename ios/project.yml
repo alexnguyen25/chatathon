@@ -35,3 +35,26 @@ targets:
         product: StressCore
       - package: StressMonitorUI
         product: StressMonitorUI
+
+  # Exists to produce screenshots in CI, not to assert behaviour. Nobody on
+  # this project has a Mac, so this is the only way the screens get looked at.
+  PulsePlanUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: PulsePlan
+    settings:
+      base:
+        TEST_TARGET_NAME: PulsePlan
+
+schemes:
+  PulsePlan:
+    build:
+      targets:
+        PulsePlan: all
+        PulsePlanUITests: [test]
+    test:
+      targets:
+        - PulsePlanUITests
