@@ -1,49 +1,105 @@
 # PulsePlan
 
-A native iPhone MVP that connects heart-rate observations to an optional break in your calendar. Health analysis and Apple Foundation Models inference run on-device. No backend or cloud API key is required.
+### Your calendar knows when you’re busy. Your body knows when you need a pause.
 
-The app opens in a clearly labeled fictional demo day at **11:55 AM**, with 15 calendar events and simulated heart-rate readings. A deterministic, unvalidated pattern rule checks for a sustained rise before suggesting a pause. The model can choose a constrained calm pause; measurements, comparisons, and calendar availability are computed in Swift. If the model is unavailable or fails, an explicitly labeled fallback keeps the flow usable.
+A hackathon-built iPhone app that brings health signals, on-device AI, and your calendar together—so a packed workday can make room for a reset.
 
-## Run
+[![Build](https://github.com/alexnguyen25/chatathon/actions/workflows/ci.yml/badge.svg)](https://github.com/alexnguyen25/chatathon/actions/workflows/ci.yml)
+**SwiftUI · HealthKit · EventKit · Apple Foundation Models**
 
-1. Open [`ios/PulsePlan.xcodeproj`](ios/PulsePlan.xcodeproj) in **Xcode 26 or newer**.
-2. Select the **PulsePlan** scheme and an **iOS 26 or newer** simulator or iPhone.
-3. For a physical device, select your own team in Signing & Capabilities and change the bundle identifier if needed. The checked-in signing settings belong to the original development setup.
-4. Build and run. Demo mode needs no Health or Calendar permissions. Apple Intelligence availability affects the AI pause selection, not the demo's deterministic analysis or fallback.
+## The idea
 
-## Try the demo
+Back-to-back meetings make it easy to ignore how you’re feeling. Calendar apps show when you’re free, but an empty slot alone doesn’t mean you need a break.
 
-Tap **Analyze my signals → Review break → Add to demo day → See it in my day**. The first proposed break is **12:00–12:15**, between the morning meetings and 12:30 lunch. Explore **Your day** and **Health**, then use **Reset** in the demo banner to repeat. Demo changes stay inside the app and never write to Health or Calendar.
+PulsePlan starts with your recorded health data. When it finds a sustained rise in heart rate compared with earlier in the day, it explains the observation, suggests a calm pause, and finds room for it in your schedule. You review the suggestion and decide whether to add it.
 
-For real data, leave demo mode with **Exit** or **Connections → Explore a demo day**, then connect Health and Calendar separately. Health can read recorded heart rate, HRV (SDNN), resting heart rate, and sleep when available. A real calendar write requires reviewing the break, choosing a writable calendar, and tapping **Add to calendar**. The event is titled “Private reset” and omits health readings and AI explanations; its visibility and synchronization follow the selected calendar's settings.
+**Health signals first. Calendar placement second. You make the call.**
 
-Optional live collection is under **Health**. It starts and saves an “Other” workout in Apple Health and may affect activity metrics. Readings depend on supported hardware and permissions; this is not passive, continuous, all-day AirPods monitoring. Simulator use does not validate physical sensor streaming.
+## What we built
 
-## Verify
+- **Today:** a health check-in, what’s happening now, and one clear next action.
+- **Your day:** a meeting-heavy schedule with a suggested break placed right after a meeting—not one minute later.
+- **Health:** heart-rate readings, HRV, resting heart rate, sleep context, and explanations of what each metric means.
+- **On-device AI:** Apple Foundation Models chooses a constrained pause type, with a labeled fallback when the model isn’t available.
+- **Calendar integration:** review and confirm a break before saving it to a calendar you choose.
+- **A ready-to-run demo:** fictional health readings and a busy workday, with no account, backend, or API key required.
 
-From the repository root, with Xcode 26 or newer installed:
+## Where AI fits
+
+Swift computes the health observations and checks for a sustained heart-rate rise using an experimental rule. Only then does on-device AI choose a calm pause, such as a quiet reset or time away from the screen. Calendar logic finds an available slot.
+
+The model does **not** invent measurements, diagnose stress, or create calendar events on its own. Explanations use computed observations; every real calendar write requires your confirmation.
+
+See the [health-signal rule](docs/health-signal-rule.md) for the exact MVP behavior.
+
+## Try the demo in a minute
+
+The demo opens at **11:55 AM**: a fictional corporate workday with **15 calendar events**, an exaggerated heart-rate rise, and a meeting ending at noon.
+
+1. Explore **Health** to see the readings and **Your day** to see the schedule.
+2. On **Today**, tap **Analyze my signals**.
+3. Read the explanation, then tap **Review break**.
+4. Confirm the **12:00–12:15** break with **Add to demo day**.
+5. Tap **See it in my day** to find it in the agenda.
+
+Use **Reset** to replay the scenario. Demo data stays inside PulsePlan and never writes to Apple Health or your real calendar.
+
+[Full demo walkthrough →](docs/DEMO.md)
+
+## Design
+
+A calm, mobile-first interface built around three destinations: Today, Your day, and Health.
+
+These are our **design mockups**, not screenshots of every current app state:
+
+<table>
+  <tr>
+    <td><img src="docs/design/pulseplan-core/02-example-day.png" alt="PulsePlan day-view design mockup" width="300"></td>
+    <td><img src="docs/design/pulseplan-core/03-break-suggestion.png" alt="PulsePlan break-suggestion design mockup" width="300"></td>
+  </tr>
+</table>
+
+[Design references and tokens →](docs/design/pulseplan-core/README.md)
+
+## Run locally
+
+**Requirements:** Xcode 26+ and an iOS 26+ simulator or iPhone.
+
+1. Open [`ios/PulsePlan.xcodeproj`](ios/PulsePlan.xcodeproj).
+2. Select the **PulsePlan** scheme and your device or simulator.
+3. For an iPhone, select your development team in **Signing & Capabilities** and change the bundle identifier if needed.
+4. Build and run. Demo mode works without Health or Calendar permissions.
+
+On-device AI requires a device where Apple Foundation Models is available. The labeled fallback keeps the demo usable without it.
+
+### Connect real data
+
+Exit demo mode and connect Health and Calendar separately. PulsePlan can read available heart rate, HRV (SDNN), resting heart rate, and sleep records through HealthKit.
+
+Real breaks are saved only after review and confirmation. Calendar entries omit physiological readings and AI explanations; their visibility follows the selected calendar’s sharing settings.
+
+**The AirPods angle:** optional live heart-rate collection uses HealthKit and compatible sensor hardware. It starts and saves an “Other” workout, which may affect activity metrics. This MVP does not provide passive, continuous, all-day AirPods monitoring, and a simulator cannot validate sensor streaming.
+
+## Development
+
+Run the core regression tests and compile the simulator target:
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer bash scripts/check.sh
 ```
 
-Or run the checks separately:
+The test suite covers the app’s actual core logic: health-pattern checks, missing data, calendar boundaries, overlapping meetings, sleep aggregation, and supporting observations. Hardware, model availability, and real permission flows require device testing.
 
-```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcrun swift test
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
-  -project ios/PulsePlan.xcodeproj -scheme PulsePlan \
-  -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
-  CODE_SIGNING_ALLOWED=NO build
-```
+| Location | What’s inside |
+| --- | --- |
+| [`ios/PulsePlan`](ios/PulsePlan) | The active SwiftUI app and integrations |
+| [`ios/PulsePlan/Core`](ios/PulsePlan/Core) | Shared health-analysis and scheduling logic |
+| [`Tests/PulsePlanCoreTests`](Tests/PulsePlanCoreTests) | Core regression tests |
+| [`docs`](docs/README.md) | Demo guide, design assets, and implementation notes |
+| [`archive`](archive/README.md) | Earlier hackathon prototypes, preserved for reference |
 
-The root Swift package tests the app's actual [`Core`](ios/PulsePlan/Core) sources. Hardware HealthKit behavior, on-device model availability, and real calendar permissions/saves also need device verification.
+## Built for a hackathon, not a diagnosis
 
-## Repository
+PulsePlan is an experimental MVP, not a medical device. Heart rate can change for many reasons; the app cannot diagnose stress or prove a meeting caused a physiological change. Its pattern rule is not clinically validated, and missing data or no suggestion does not establish wellbeing.
 
-- [`ios/PulsePlan`](ios/PulsePlan): the active SwiftUI app, deterministic core, HealthKit, EventKit, and on-device suggestion code.
-- [`Tests/PulsePlanCoreTests`](Tests/PulsePlanCoreTests): core logic tests, run with `swift test`.
-- [`docs`](docs/README.md): implementation notes, research, and the canonical [visual design reference](docs/design/pulseplan-core/README.md).
-- [`archive`](archive/README.md): preserved earlier prototypes; not dependencies of the active app.
-
-This is an experimental, nonmedical hackathon MVP. Its heart-pattern rule is not clinically validated, does not diagnose stress, and cannot establish that a meeting caused a physiological change. Missing data or no triggered suggestion does not establish wellbeing. Background monitoring, reliable all-day capture, and App Store readiness are not claimed.
+Suggestions are optional context—not instructions to trust blindly. Use your own judgment and seek appropriate medical care for concerning symptoms. Reliable background monitoring and App Store readiness are outside this prototype’s scope.
