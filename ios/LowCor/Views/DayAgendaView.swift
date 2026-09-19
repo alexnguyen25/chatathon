@@ -34,7 +34,7 @@ struct DayAgendaView: View {
                     }
                     Label("Readings show what was recorded, not what caused a change.", systemImage: "info.circle")
                         .font(.footnote)
-                        .foregroundStyle(PulsePlanTheme.secondary)
+                        .foregroundStyle(LowCorTheme.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -44,8 +44,8 @@ struct DayAgendaView: View {
             .frame(maxWidth: 680, alignment: .leading)
             .frame(maxWidth: .infinity)
         }
-        .background(PulsePlanTheme.canvas)
-        .foregroundStyle(PulsePlanTheme.ink)
+        .background(LowCorTheme.canvas)
+        .foregroundStyle(LowCorTheme.ink)
         .refreshable {
             calendar.refresh()
             await health.refresh()
@@ -62,7 +62,7 @@ struct DayAgendaView: View {
                 .font(.title3.weight(.semibold))
             Text("Your schedule and heart rate, together.")
                 .font(.subheadline)
-                .foregroundStyle(PulsePlanTheme.secondary)
+                .foregroundStyle(LowCorTheme.secondary)
             if calendar.connected {
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: 16) { summaryLabels }
@@ -82,13 +82,13 @@ struct DayAgendaView: View {
         VStack(alignment: .leading, spacing: 20) {
             Image(systemName: "calendar.badge.plus")
                 .font(.largeTitle)
-                .foregroundStyle(PulsePlanTheme.forest)
+                .foregroundStyle(LowCorTheme.forest)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 8) {
                 Text("See the shape of your day")
                     .font(.title2.weight(.semibold))
                 Text("Connect your calendar to bring meetings, health readings, and room for a break into one place.")
-                    .foregroundStyle(PulsePlanTheme.secondary)
+                    .foregroundStyle(LowCorTheme.secondary)
             }
             Button(action: onConnect) {
                 Text("Connect calendar")
@@ -98,7 +98,7 @@ struct DayAgendaView: View {
             .buttonStyle(AgendaPrimaryButtonStyle())
             Text("Nothing is added until you review and confirm it.")
                 .font(.footnote)
-                .foregroundStyle(PulsePlanTheme.secondary)
+                .foregroundStyle(LowCorTheme.secondary)
         }
         .padding(24)
         .background(.white, in: RoundedRectangle(cornerRadius: 20))
@@ -108,15 +108,15 @@ struct DayAgendaView: View {
         VStack(alignment: .leading, spacing: 12) {
             Label("A little more breathing room", systemImage: "sun.max")
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(PulsePlanTheme.forest)
+                .foregroundStyle(LowCorTheme.forest)
             Text(allDayEvents.isEmpty ? "No events on your calendar today." : "No timed events on your calendar today.")
                 .font(.headline)
             Text("Head to Today to find a time for a break. It will appear here alongside your schedule.")
-                .foregroundStyle(PulsePlanTheme.secondary)
+                .foregroundStyle(LowCorTheme.secondary)
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(PulsePlanTheme.sage, in: RoundedRectangle(cornerRadius: 20))
+        .background(LowCorTheme.sage, in: RoundedRectangle(cornerRadius: 20))
     }
 
     private var allDaySection: some View {
@@ -124,18 +124,18 @@ struct DayAgendaView: View {
             Text("ALL DAY")
                 .font(.caption.weight(.semibold))
                 .tracking(1)
-                .foregroundStyle(PulsePlanTheme.secondary)
+                .foregroundStyle(LowCorTheme.secondary)
             ForEach(allDayEvents) { event in
                 Button { selectedEvent = event } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "calendar")
-                            .foregroundStyle(PulsePlanTheme.forest)
+                            .foregroundStyle(LowCorTheme.forest)
                             .accessibilityHidden(true)
                         Text(event.title).font(.subheadline.weight(.medium))
                         Spacer(minLength: 8)
                         Image(systemName: "chevron.right")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(PulsePlanTheme.secondary)
+                            .foregroundStyle(LowCorTheme.secondary)
                             .accessibilityHidden(true)
                     }
                     .padding(16)
@@ -158,7 +158,7 @@ struct DayAgendaView: View {
                 Text("Tap an event for details")
                     .font(.caption)
             }
-            .foregroundStyle(PulsePlanTheme.secondary)
+            .foregroundStyle(LowCorTheme.secondary)
 
             LazyVStack(spacing: 0) {
                 ForEach(timeline) { entry in
@@ -173,7 +173,7 @@ struct DayAgendaView: View {
                             VStack(spacing: 12) {
                                 timeLabel(entry.start)
                                 Rectangle()
-                                    .fill(PulsePlanTheme.secondary.opacity(0.18))
+                                    .fill(LowCorTheme.secondary.opacity(0.18))
                                     .frame(width: 1)
                                     .frame(maxHeight: .infinity)
                             }
@@ -191,7 +191,7 @@ struct DayAgendaView: View {
         Text(date.formatted(date: .omitted, time: .shortened))
             .font(.caption.weight(.medium))
             .monospacedDigit()
-            .foregroundStyle(PulsePlanTheme.secondary)
+            .foregroundStyle(LowCorTheme.secondary)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.top, 16)
     }
@@ -208,12 +208,12 @@ struct DayAgendaView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Label("SUGGESTED BREAK", systemImage: "cup.and.saucer")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(PulsePlanTheme.forest)
+                    .foregroundStyle(LowCorTheme.forest)
                 Text("A moment for yourself")
                     .font(.headline)
                 Text("\(slot.start.formatted(date: .omitted, time: .shortened)) – \(slot.end.formatted(date: .omitted, time: .shortened))")
                     .font(.subheadline)
-                    .foregroundStyle(PulsePlanTheme.secondary)
+                    .foregroundStyle(LowCorTheme.secondary)
                 Button(action: onReview) {
                     HStack {
                         Text("Review break")
@@ -224,15 +224,15 @@ struct DayAgendaView: View {
                     .frame(minHeight: 44)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(PulsePlanTheme.forest)
+                .foregroundStyle(LowCorTheme.forest)
                 .accessibilityHint("Review before adding to your calendar")
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(PulsePlanTheme.sage.opacity(0.65), in: RoundedRectangle(cornerRadius: 16))
+            .background(LowCorTheme.sage.opacity(0.65), in: RoundedRectangle(cornerRadius: 16))
             .overlay {
                 RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(PulsePlanTheme.forest.opacity(0.65), style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
+                    .strokeBorder(LowCorTheme.forest.opacity(0.65), style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
             }
         }
     }
@@ -277,7 +277,7 @@ private struct AgendaEventCard: View {
             } else if isCurrent {
                 Label("HAPPENING NOW", systemImage: "clock")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(PulsePlanTheme.forest)
+                    .foregroundStyle(LowCorTheme.forest)
             }
             HStack(alignment: .top, spacing: 8) {
                 Text(event.title).font(.headline)
@@ -289,7 +289,7 @@ private struct AgendaEventCard: View {
             }
             Text("\(event.startDate.formatted(date: .omitted, time: .shortened)) – \(event.endDate.formatted(date: .omitted, time: .shortened))")
                 .font(.subheadline)
-                .foregroundStyle(isSavedBreak ? .white.opacity(0.9) : PulsePlanTheme.secondary)
+                .foregroundStyle(isSavedBreak ? .white.opacity(0.9) : LowCorTheme.secondary)
             if let average = agendaAverage(readings) {
                 VStack(alignment: .leading, spacing: 4) {
                     Label("\(average) BPM average", systemImage: "heart")
@@ -297,23 +297,23 @@ private struct AgendaEventCard: View {
                     Text("\(readings.count) recorded sample\(readings.count == 1 ? "" : "s")")
                         .font(.caption)
                 }
-                .foregroundStyle(isSavedBreak ? .white : PulsePlanTheme.terracotta)
+                .foregroundStyle(isSavedBreak ? .white : LowCorTheme.terracotta)
                 .padding(.top, 4)
             } else if event.startDate <= now {
                 Text("No readings in this window")
                     .font(.caption)
-                    .foregroundStyle(isSavedBreak ? .white.opacity(0.9) : PulsePlanTheme.secondary)
+                    .foregroundStyle(isSavedBreak ? .white.opacity(0.9) : LowCorTheme.secondary)
                     .padding(.top, 4)
             }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .foregroundStyle(isSavedBreak ? .white : PulsePlanTheme.ink)
-        .background(isSavedBreak ? PulsePlanTheme.forest : .white, in: RoundedRectangle(cornerRadius: 16))
+        .foregroundStyle(isSavedBreak ? .white : LowCorTheme.ink)
+        .background(isSavedBreak ? LowCorTheme.forest : .white, in: RoundedRectangle(cornerRadius: 16))
         .overlay {
             if isCurrent && !isSavedBreak {
                 RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(PulsePlanTheme.forest.opacity(0.45), lineWidth: 1)
+                    .strokeBorder(LowCorTheme.forest.opacity(0.45), lineWidth: 1)
             }
         }
         .contentShape(RoundedRectangle(cornerRadius: 16))
@@ -332,14 +332,14 @@ private struct AgendaEventDetail: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    if isDemo { Label("Demo data · fictional event and readings", systemImage: "flask").font(.caption).foregroundStyle(PulsePlanTheme.forest) }
+                    if isDemo { Label("Demo data · fictional event and readings", systemImage: "flask").font(.caption).foregroundStyle(LowCorTheme.forest) }
                     VStack(alignment: .leading, spacing: 12) {
                         Label(isSavedBreak ? "YOUR BREAK" : "CALENDAR EVENT", systemImage: isSavedBreak ? "cup.and.saucer" : "calendar")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(PulsePlanTheme.forest)
+                            .foregroundStyle(LowCorTheme.forest)
                         Text(event.title).font(.title.weight(.bold))
                         Text(event.startDate.formatted(date: .complete, time: .omitted))
-                            .foregroundStyle(PulsePlanTheme.secondary)
+                            .foregroundStyle(LowCorTheme.secondary)
                         Text(event.isAllDay ? "All day" : "\(event.startDate.formatted(date: .omitted, time: .shortened)) – \(event.endDate.formatted(date: .omitted, time: .shortened))")
                             .font(.headline)
                     }
@@ -351,13 +351,13 @@ private struct AgendaEventDetail: View {
                                 Text("\(average)").font(.largeTitle.weight(.semibold)).monospacedDigit()
                                 Text("BPM sample average").font(.subheadline)
                             }
-                            .foregroundStyle(PulsePlanTheme.terracotta)
+                            .foregroundStyle(LowCorTheme.terracotta)
                             Text("\(readings.count) recorded samples. These observations do not tell us whether this event caused a change.")
                                 .font(.subheadline)
-                                .foregroundStyle(PulsePlanTheme.secondary)
+                                .foregroundStyle(LowCorTheme.secondary)
                         } else {
                             Text(event.startDate > now ? "This event is still ahead. No readings are available for this time yet." : "No heart-rate samples are available for this time. Missing readings do not mean a low or high heart rate.")
-                                .foregroundStyle(PulsePlanTheme.secondary)
+                                .foregroundStyle(LowCorTheme.secondary)
                         }
                     }
                     if !readings.isEmpty {
@@ -370,11 +370,11 @@ private struct AgendaEventDetail: View {
                                         Text("\(Int(reading.bpm.rounded())) BPM")
                                             .fontWeight(.semibold)
                                             .monospacedDigit()
-                                            .foregroundStyle(PulsePlanTheme.terracotta)
+                                            .foregroundStyle(LowCorTheme.terracotta)
                                     }
                                     Text(reading.source)
                                         .font(.caption)
-                                        .foregroundStyle(PulsePlanTheme.secondary)
+                                        .foregroundStyle(LowCorTheme.secondary)
                                 }
                                 .padding(.vertical, 12)
                                 .accessibilityElement(children: .combine)
@@ -387,14 +387,14 @@ private struct AgendaEventDetail: View {
                 .frame(maxWidth: 680, alignment: .leading)
                 .frame(maxWidth: .infinity)
             }
-            .foregroundStyle(PulsePlanTheme.ink)
-            .background(PulsePlanTheme.canvas)
+            .foregroundStyle(LowCorTheme.ink)
+            .background(LowCorTheme.canvas)
             .navigationTitle("Event details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
-                        .tint(PulsePlanTheme.forest)
+                        .tint(LowCorTheme.forest)
                 }
             }
         }
@@ -417,6 +417,6 @@ private struct AgendaPrimaryButtonStyle: ButtonStyle {
         configuration.label
             .foregroundStyle(.white)
             .padding(.horizontal, 16)
-            .background(PulsePlanTheme.forest.opacity(configuration.isPressed ? 0.8 : 1), in: RoundedRectangle(cornerRadius: 14))
+            .background(LowCorTheme.forest.opacity(configuration.isPressed ? 0.8 : 1), in: RoundedRectangle(cornerRadius: 14))
     }
 }

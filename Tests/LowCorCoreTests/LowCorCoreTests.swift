@@ -1,8 +1,8 @@
 import Foundation
 import XCTest
-@testable import PulsePlanCore
+@testable import LowCorCore
 
-final class PulsePlanCoreTests: XCTestCase {
+final class LowCorCoreTests: XCTestCase {
     private var now: Date {
         Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 19, hour: 12))!
     }

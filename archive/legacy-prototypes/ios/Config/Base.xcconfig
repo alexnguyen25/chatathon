@@ -2,7 +2,7 @@
 // with a leading `-` so the build still succeeds when it is absent.
 #include? "Secrets.xcconfig"
 
-PRODUCT_BUNDLE_IDENTIFIER = com.pulseplan.stressmonitor
+PRODUCT_BUNDLE_IDENTIFIER = com.lowcor.stressmonitor
 IPHONEOS_DEPLOYMENT_TARGET = 17.0
 SWIFT_VERSION = 5.9
 TARGETED_DEVICE_FAMILY = 1

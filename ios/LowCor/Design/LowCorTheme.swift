@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum PulsePlanTheme {
+enum LowCorTheme {
     static let canvas = Color(red: 0.965, green: 0.961, blue: 0.941)
     static let ink = Color(red: 0.125, green: 0.173, blue: 0.157)
     static let secondary = Color(red: 0.345, green: 0.388, blue: 0.361)

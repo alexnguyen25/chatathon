@@ -22,8 +22,8 @@
 ### Task 1: Add reusable app data types
 
 **Files:**
-- Create: `Sources/PulsePlanCore/DaySnapshot.swift`
-- Create: `Tests/PulsePlanCoreTests/DaySnapshotTests.swift`
+- Create: `Sources/LowCorCore/DaySnapshot.swift`
+- Create: `Tests/LowCorCoreTests/DaySnapshotTests.swift`
 
 **Interfaces:**
 - Produces: `DayEvent`, `MeasurementSummary`, and `DaySnapshot` values used by iOS stores.
@@ -35,20 +35,20 @@
 ### Task 2: Read today’s calendar after user consent
 
 **Files:**
-- Create: `PulsePlanIOS/MyApp/CalendarStore.swift`
-- Modify: `PulsePlanIOS/Untitled Project.xcodeproj/project.pbxproj`
+- Create: `LowCorIOS/MyApp/CalendarStore.swift`
+- Modify: `LowCorIOS/Untitled Project.xcodeproj/project.pbxproj`
 
 **Interfaces:**
 - Produces: `@Published var events: [DayEvent]`, `@Published var status: String`, and `requestAccessAndLoadToday()`.
 
 - [ ] Implement an `@MainActor` `CalendarStore` using `EKEventStore` to request full calendar access and map only today’s events to `DayEvent` values sorted by start date.
 - [ ] Set `NSCalendarsFullAccessUsageDescription` in Debug and Release to explain private same-day schedule context.
-- [ ] Build with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project 'PulsePlanIOS/Untitled Project.xcodeproj' -scheme MyApp -sdk iphoneos -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build`.
+- [ ] Build with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project 'LowCorIOS/Untitled Project.xcodeproj' -scheme MyApp -sdk iphoneos -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build`.
 
 ### Task 3: Connect calendar and health flows in the functional screen
 
 **Files:**
-- Modify: `PulsePlanIOS/MyApp/ContentView.swift`
+- Modify: `LowCorIOS/MyApp/ContentView.swift`
 - Modify: `README.md`
 
 **Interfaces:**

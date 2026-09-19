@@ -1,7 +1,7 @@
 import SwiftUI
 import StressCore
 
-/// Tokens taken from the PulsePlan mockups.
+/// Tokens taken from the LowCor mockups.
 ///
 /// The system is warm paper + forest green, with terracotta held back for one
 /// job only: the biometric signal. Heart icon, heart-rate line, and the marker
@@ -11,7 +11,7 @@ import StressCore
 /// it becomes the cream-and-clay look this is trying not to be.
 public enum DS {
 
-    /// Light values are `docs/design/pulseplan-core/tokens.json` verbatim —
+    /// Light values are `docs/design/lowcor-core/tokens.json` verbatim —
     /// that file is the source of truth and these must not drift from it.
     /// Dark values are derived here, because tokens.json is light-only.
     public enum Palette {
@@ -269,13 +269,13 @@ public struct Wordmark: View {
                                                              lineCap: .round,
                                                              lineJoin: .round))
                 .frame(width: 26, height: 18)
-            Text("PulsePlan")
+            Text("LowCor")
                 .font(.system(.title3, weight: .semibold))
                 .tracking(-0.3)
                 .foregroundStyle(DS.Palette.ink)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("PulsePlan")
+        .accessibilityLabel("LowCor")
     }
 }
 

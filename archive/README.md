@@ -1,6 +1,6 @@
 # Archived prototypes
 
-The working PulsePlan MVP lives in [`ios/PulsePlan`](../ios/PulsePlan) and [`ios/PulsePlan.xcodeproj`](../ios/PulsePlan.xcodeproj). Everything in `legacy-prototypes` is preserved for project history and reference; it is not part of the active app's build or test targets.
+The working LowCor MVP lives in [`ios/LowCor`](../ios/LowCor) and [`ios/LowCor.xcodeproj`](../ios/LowCor.xcodeproj). Everything in `legacy-prototypes` is preserved for project history and reference; it is not part of the active app's build or test targets.
 
 The archive retains the earlier directory layout where practical:
 

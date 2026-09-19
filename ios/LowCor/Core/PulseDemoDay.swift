@@ -1,6 +1,6 @@
 import Foundation
 
-/// A fictional day for previewing PulsePlan. These samples and appointments are
+/// A fictional day for previewing LowCor. These samples and appointments are
 /// synthetic, never written to Health or Calendar, and imply no medical cause.
 struct PulseDemoDay {
     let now: Date

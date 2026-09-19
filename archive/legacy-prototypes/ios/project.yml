@@ -3,10 +3,10 @@
 # avoids merge conflicts in a pbxproj nobody can read.
 #
 #   brew install xcodegen && cd ios && xcodegen generate
-name: PulsePlan
+name: LowCor
 
 options:
-  bundleIdPrefix: com.pulseplan
+  bundleIdPrefix: com.lowcor
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
@@ -18,7 +18,7 @@ packages:
     path: StressMonitorUI
 
 targets:
-  PulsePlan:
+  LowCor:
     type: application
     platform: iOS
     sources:
@@ -38,23 +38,23 @@ targets:
 
   # Exists to produce screenshots in CI, not to assert behaviour. Nobody on
   # this project has a Mac, so this is the only way the screens get looked at.
-  PulsePlanUITests:
+  LowCorUITests:
     type: bundle.ui-testing
     platform: iOS
     sources:
       - path: UITests
     dependencies:
-      - target: PulsePlan
+      - target: LowCor
     settings:
       base:
-        TEST_TARGET_NAME: PulsePlan
+        TEST_TARGET_NAME: LowCor
 
 schemes:
-  PulsePlan:
+  LowCor:
     build:
       targets:
-        PulsePlan: all
-        PulsePlanUITests: [test]
+        LowCor: all
+        LowCorUITests: [test]
     test:
       targets:
-        - PulsePlanUITests
+        - LowCorUITests

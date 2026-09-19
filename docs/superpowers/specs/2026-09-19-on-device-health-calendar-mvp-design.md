@@ -1,4 +1,4 @@
-# PulsePlan on-device health and calendar MVP
+# LowCor on-device health and calendar MVP
 
 ## Goal
 
@@ -40,7 +40,7 @@ when the user asks to connect a calendar, then returns same-day events from
 the calendars selected by the user.
 
 `DaySnapshotStore` persists minimal app-owned data locally. HealthKit and
-EventKit remain the systems of record; PulsePlan does not copy raw health
+EventKit remain the systems of record; LowCor does not copy raw health
 samples or entire calendar histories.
 
 The app composes the three stores into one current-day screen. Both the live

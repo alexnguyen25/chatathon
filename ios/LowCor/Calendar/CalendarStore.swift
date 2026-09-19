@@ -18,13 +18,13 @@ final class CalendarStore: ObservableObject {
         events = day?.events ?? []
         writableCalendars = []
         connected = day != nil
-        status = day == nil ? "Connect your calendar to see today’s schedule." : "Fictional schedule. Demo changes stay inside PulsePlan."
+        status = day == nil ? "Connect your calendar to see today’s schedule." : "Fictional schedule. Demo changes stay inside LowCor."
         if day == nil { refresh() }
     }
     private let eventStore = EKEventStore()
 
     var defaultCalendarID: String? {
-        if isDemo { return "pulseplan-demo-calendar" }
+        if isDemo { return "lowcor-demo-calendar" }
         guard connected else { return nil }
         if let calendar = eventStore.defaultCalendarForNewEvents,
            writableCalendars.contains(where: { $0.calendarIdentifier == calendar.calendarIdentifier }) {
@@ -110,7 +110,7 @@ final class CalendarStore: ObservableObject {
     @discardableResult
     func saveBreak(start: Date, end: Date, calendarID: String) throws -> String {
         if isDemo {
-            guard calendarID == "pulseplan-demo-calendar", start > currentDate, end > start else { throw SchedulingError.invalidTime }
+            guard calendarID == "lowcor-demo-calendar", start > currentDate, end > start else { throw SchedulingError.invalidTime }
             guard !events.contains(where: { $0.startDate < end && $0.endDate > start }) else { throw SchedulingError.conflict }
             let id = "demo-break-\(UUID().uuidString)"
             events.append(CalendarEvent(id: id, title: "Private reset", startDate: start, endDate: end, isAllDay: false))
@@ -136,7 +136,7 @@ final class CalendarStore: ObservableObject {
         event.endDate = end
         event.availability = .busy
         // Keep physiological details and meeting titles out of the calendar entry.
-        event.notes = "A short break planned with PulsePlan."
+        event.notes = "A short break planned with LowCor."
         try eventStore.save(event, span: .thisEvent, commit: true)
         loadToday()
         status = "Your break was added to \(calendar.title)."

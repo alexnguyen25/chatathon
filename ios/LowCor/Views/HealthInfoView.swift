@@ -10,7 +10,7 @@ struct HealthInfoView: View {
                         .font(.title2.weight(.semibold))
                         .accessibilityAddTraits(.isHeader)
                     Text("Numbers are context, not a verdict. These adult reference values are not personalized targets or diagnoses.")
-                        .foregroundStyle(PulsePlanTheme.secondary)
+                        .foregroundStyle(LowCorTheme.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -21,7 +21,7 @@ struct HealthInfoView: View {
                 }
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(PulsePlanTheme.sage, in: RoundedRectangle(cornerRadius: 20))
+                .background(LowCorTheme.sage, in: RoundedRectangle(cornerRadius: 20))
 
                 metricCard(
                     title: "Heart rate",
@@ -46,7 +46,7 @@ struct HealthInfoView: View {
                     symbol: "waveform.path.ecg",
                     reference: "HRV · SDNN in milliseconds",
                     summary: "Variation in the time between heartbeats. There is no single normal cutoff for everyone’s short wearable recordings. Compare your own readings under similar conditions.",
-                    details: "Lower than your usual HRV can accompany less sleep or other changes; it does not identify the cause. Higher is not automatically better. Age, breathing, posture, recording length and signal quality affect comparisons. Short wearable measurements and 24-hour clinical values are not interchangeable. PulsePlan reads recorded SDNN—it does not calculate HRV from ordinary BPM samples.",
+                    details: "Lower than your usual HRV can accompany less sleep or other changes; it does not identify the cause. Higher is not automatically better. Age, breathing, posture, recording length and signal quality affect comparisons. Short wearable measurements and 24-hour clinical values are not interchangeable. LowCor reads recorded SDNN—it does not calculate HRV from ordinary BPM samples.",
                     sourceTitle: "Apple HealthKit: HRV / SDNN",
                     sourceURL: "https://developer.apple.com/documentation/healthkit/hkquantitytypeidentifier/heartratevariabilitysdnn"
                 )
@@ -56,7 +56,7 @@ struct HealthInfoView: View {
                     symbol: "moon.zzz",
                     reference: "7+ hours · recommendation for ages 18–60",
                     summary: "CDC recommends 7–9 hours at ages 61–64 and 7–8 hours at 65+. Sleep quality matters too; these recommendations are not a guarantee of feeling rested.",
-                    details: "A shorter recorded night may mean less sleep—or incomplete tracking. Longer recordings do not prove good-quality sleep. PulsePlan shows sleep recorded in Health, not a diagnosis. Speak with a healthcare professional about recurring sleep problems.",
+                    details: "A shorter recorded night may mean less sleep—or incomplete tracking. Longer recordings do not prove good-quality sleep. LowCor shows sleep recorded in Health, not a diagnosis. Speak with a healthcare professional about recurring sleep problems.",
                     sourceTitle: "CDC: About sleep",
                     sourceURL: "https://www.cdc.gov/sleep/about/index.html"
                 )
@@ -65,10 +65,10 @@ struct HealthInfoView: View {
                     Text("How we use this")
                         .font(.headline)
                         .accessibilityAddTraits(.isHeader)
-                    Text("PulsePlan looks for repeated elevated heart-rate samples before recommending a pause. Only then does it look for a calendar opening. An open slot by itself never triggers a suggestion. HRV and sleep add context; they cannot prove stress or that a break will change your readings.")
+                    Text("LowCor looks for repeated elevated heart-rate samples before recommending a pause. Only then does it look for a calendar opening. An open slot by itself never triggers a suggestion. HRV and sleep add context; they cannot prove stress or that a break will change your readings.")
                     DisclosureGroup("How the MVP pattern check works") {
                         Text("The last 30 minutes must contain at least four samples spanning 15 minutes, with no gaps over 10 minutes and a latest sample within 10 minutes. Earlier today must also have at least four samples spanning 15 minutes. At least 80% of recent samples, and their average, must exceed the earlier sample average by both 20 BPM and 25%. These are unvalidated product rules—not clinical thresholds or a reliable stress test. A missing or negative flag does not rule out a health issue.")
-                            .font(.footnote).foregroundStyle(PulsePlanTheme.secondary).padding(.top, 8)
+                            .font(.footnote).foregroundStyle(LowCorTheme.secondary).padding(.top, 8)
                     }
                     Text("A screen-free pause gives you room to move, stretch or change posture. Short, regular changes of activity can fit into a workday; the right timing depends on your work. Our 15-minute slot is an app choice, not a medical prescription.")
                     Text("Missing values mean unknown, not zero. Demo values are simulated. You always review a break before saving it.")
@@ -93,16 +93,16 @@ struct HealthInfoView: View {
                     referenceLink("Research: HRV metrics and recording context", "https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2017.00258/full")
                     Text("General education for adults. Your clinician can help interpret your individual readings.")
                         .font(.footnote)
-                        .foregroundStyle(PulsePlanTheme.secondary)
+                        .foregroundStyle(LowCorTheme.secondary)
                 }
             }
             .padding(24)
             .frame(maxWidth: 640)
             .frame(maxWidth: .infinity)
         }
-        .background(PulsePlanTheme.canvas)
-        .foregroundStyle(PulsePlanTheme.ink)
-        .tint(PulsePlanTheme.forest)
+        .background(LowCorTheme.canvas)
+        .foregroundStyle(LowCorTheme.ink)
+        .tint(LowCorTheme.forest)
         .navigationTitle("About your signals")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -122,13 +122,13 @@ struct HealthInfoView: View {
                 .accessibilityAddTraits(.isHeader)
             Text(reference)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(PulsePlanTheme.forest)
+                .foregroundStyle(LowCorTheme.forest)
             Text(summary)
                 .font(.subheadline)
             DisclosureGroup("What a change could mean") {
                 Text(details)
                     .font(.subheadline)
-                    .foregroundStyle(PulsePlanTheme.secondary)
+                    .foregroundStyle(LowCorTheme.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 8)
             }

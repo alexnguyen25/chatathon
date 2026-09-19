@@ -1,4 +1,4 @@
-# PulsePlan — core iPhone concept
+# LowCor — core iPhone concept
 
 Four core screens and one completion state. Designed September 19, 2026.
 

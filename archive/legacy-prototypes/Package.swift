@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "PulsePlan",
+    name: "LowCor",
     products: [
-        .library(name: "PulsePlanCore", targets: ["PulsePlanCore"])
+        .library(name: "LowCorCore", targets: ["LowCorCore"])
     ],
     targets: [
-        .target(name: "PulsePlanCore"),
-        .testTarget(name: "PulsePlanCoreTests", dependencies: ["PulsePlanCore"])
+        .target(name: "LowCorCore"),
+        .testTarget(name: "LowCorCoreTests", dependencies: ["LowCorCore"])
     ]
 )

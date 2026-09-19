@@ -1,6 +1,6 @@
 import SwiftUI
 
-@main struct PulsePlanApp: App {
+@main struct LowCorApp: App {
     var body: some Scene {
         WindowGroup {
             TodayView()

@@ -11,8 +11,8 @@ struct TodayView: View {
     @State private var reviewDraft: PulseBreakDraft?
     @State private var preparing = false
     @State private var showsHealthInfo = false
-    @AppStorage("pulseplan.lastBreakID") private var savedEventID = ""
-    @AppStorage("pulseplan.demoMode") private var demoMode = true
+    @AppStorage("lowcor.lastBreakID") private var savedEventID = ""
+    @AppStorage("lowcor.demoMode") private var demoMode = true
     @State private var demoSavedEventID = ""
     private var activeSavedEventID: String { demoMode ? demoSavedEventID : savedEventID }
 
@@ -29,7 +29,7 @@ struct TodayView: View {
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack {
-                today.navigationTitle("PulsePlan").navigationBarTitleDisplayMode(.inline)
+                today.navigationTitle("LowCor").navigationBarTitleDisplayMode(.inline)
                     .toolbar { connectionsToolbar }
             }.tabItem { Label("Today", systemImage: "sun.max") }.tag(0)
             NavigationStack {
@@ -43,7 +43,7 @@ struct TodayView: View {
                     .navigationTitle("Health").toolbar { connectionsToolbar }
             }.tabItem { Label("Health", systemImage: "heart") }.tag(2)
         }
-        .tint(PulsePlanTheme.forest).preferredColorScheme(.light)
+        .tint(LowCorTheme.forest).preferredColorScheme(.light)
         .safeAreaInset(edge: .top, spacing: 0) {
             if demoMode {
                 HStack {
@@ -53,7 +53,7 @@ struct TodayView: View {
                         .frame(minWidth: 44, minHeight: 44).disabled(preparing || suggestion.isGenerating)
                     Button("Exit") { demoMode = false }.font(.caption.weight(.semibold))
                         .frame(minWidth: 44, minHeight: 44).disabled(preparing || suggestion.isGenerating)
-                }.padding(.horizontal, 24).foregroundStyle(PulsePlanTheme.forest).background(PulsePlanTheme.sage)
+                }.padding(.horizontal, 24).foregroundStyle(LowCorTheme.forest).background(LowCorTheme.sage)
             }
         }
         .sheet(isPresented: $connections) {
@@ -71,7 +71,7 @@ struct TodayView: View {
                 HealthInfoView().toolbar {
                     ToolbarItem(placement: .confirmationAction) { Button("Done") { showsHealthInfo = false } }
                 }
-            }.tint(PulsePlanTheme.forest)
+            }.tint(LowCorTheme.forest)
         }
         .task { await applyMode() }
         .onChange(of: demoMode) { _, _ in Task { await applyMode() } }
@@ -92,7 +92,7 @@ struct TodayView: View {
             VStack(alignment: .leading, spacing: 28) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(Date.now.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()).uppercased())
-                        .font(.caption.weight(.semibold)).tracking(1.4).foregroundStyle(PulsePlanTheme.secondary)
+                        .font(.caption.weight(.semibold)).tracking(1.4).foregroundStyle(LowCorTheme.secondary)
                     Text("Your day.\nA little more balanced.")
                         .font(.system(.largeTitle, design: .rounded).weight(.bold)).tracking(-0.8)
                         .accessibilityAddTraits(.isHeader)
@@ -102,11 +102,11 @@ struct TodayView: View {
                 contextSection
                 agendaPreview
                 Label("Health analysis stays on your iPhone", systemImage: "lock.shield")
-                    .font(.caption).foregroundStyle(PulsePlanTheme.secondary)
+                    .font(.caption).foregroundStyle(LowCorTheme.secondary)
                     .frame(maxWidth: .infinity).padding(.bottom, 8)
             }.frame(maxWidth: 640).padding(24).frame(maxWidth: .infinity)
         }
-        .background(PulsePlanTheme.canvas).foregroundStyle(PulsePlanTheme.ink)
+        .background(LowCorTheme.canvas).foregroundStyle(LowCorTheme.ink)
         .refreshable { await refresh() }
     }
 
@@ -152,7 +152,7 @@ struct TodayView: View {
                     Task { await generate() }
                 } label: {
                     HStack(spacing: 10) {
-                        if preparing || suggestion.isGenerating { ProgressView().tint(PulsePlanTheme.forest) }
+                        if preparing || suggestion.isGenerating { ProgressView().tint(LowCorTheme.forest) }
                         Text(preparing || suggestion.isGenerating ? "Analyzing your signals…" : "Analyze my signals")
                         if !preparing && !suggestion.isGenerating { Image(systemName: "arrow.right") }
                     }
@@ -162,7 +162,7 @@ struct TodayView: View {
             }
         }
         .padding(24).frame(maxWidth: .infinity, alignment: .leading).foregroundStyle(.white)
-        .background(PulsePlanTheme.forest, in: RoundedRectangle(cornerRadius: 24))
+        .background(LowCorTheme.forest, in: RoundedRectangle(cornerRadius: 24))
     }
 
     private func savedCard(_ event: CalendarEvent) -> some View {
@@ -173,8 +173,8 @@ struct TodayView: View {
                 .font(.headline)
             Text(demoMode ? "Your break is saved in this demo only. Your real calendar is unchanged." : "Your break is saved to Calendar. Nothing else on your schedule was moved.").font(.subheadline)
             Button("See it in my day", systemImage: "arrow.right") { tab = 1 }.buttonStyle(PulsePrimaryButton())
-        }.padding(24).frame(maxWidth: .infinity, alignment: .leading).foregroundStyle(PulsePlanTheme.forest)
-            .background(PulsePlanTheme.sage, in: RoundedRectangle(cornerRadius: 24))
+        }.padding(24).frame(maxWidth: .infinity, alignment: .leading).foregroundStyle(LowCorTheme.forest)
+            .background(LowCorTheme.sage, in: RoundedRectangle(cornerRadius: 24))
     }
 
     private var contextSection: some View {
@@ -193,13 +193,13 @@ struct TodayView: View {
             Text(health.readings.isEmpty
                  ? "No heart-rate readings yet. Connect Health to analyze a pattern; missing data is not a sign that you don’t need a break."
                  : "Heart-rate patterns trigger the check-in. Calendar availability only determines where a suggested pause can fit.")
-                .font(.footnote).foregroundStyle(PulsePlanTheme.secondary)
+                .font(.footnote).foregroundStyle(LowCorTheme.secondary)
         }
     }
 
     private func signalMetric(_ title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.caption).foregroundStyle(PulsePlanTheme.secondary)
+            Text(title).font(.caption).foregroundStyle(LowCorTheme.secondary)
             Text(value).font(.title3.weight(.semibold)).monospacedDigit()
         }.frame(maxWidth: .infinity, alignment: .leading).accessibilityElement(children: .combine)
     }
@@ -207,27 +207,27 @@ struct TodayView: View {
     private func analysisCard(_ analysis: PulseBreakAnalysis) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             Label("What your signals show", systemImage: "text.magnifyingglass").font(.title3.bold())
-            if demoMode { Text("Based on fictional demo data").font(.caption.weight(.semibold)).foregroundStyle(PulsePlanTheme.forest) }
+            if demoMode { Text("Based on fictional demo data").font(.caption.weight(.semibold)).foregroundStyle(LowCorTheme.forest) }
             ForEach(analysis.evidence) { item in
                 VStack(alignment: .leading, spacing: 6) {
                     Label(item.title, systemImage: item.symbol).font(.subheadline.weight(.semibold))
-                    Text(item.detail).font(.subheadline).foregroundStyle(PulsePlanTheme.secondary)
+                    Text(item.detail).font(.subheadline).foregroundStyle(LowCorTheme.secondary)
                 }
             }
             Divider()
             if analysis.heartSignal?.shouldSuggest == true {
                 Label(BreakSuggestionStore.elevatedCaution, systemImage: "exclamationmark.circle")
-                    .font(.subheadline).foregroundStyle(PulsePlanTheme.secondary)
+                    .font(.subheadline).foregroundStyle(LowCorTheme.secondary)
                 Link("Heart-rate context · American Heart Association", destination: URL(string: "https://www.heart.org/en/health-topics/high-blood-pressure/the-facts-about-high-blood-pressure/all-about-heart-rate-pulse")!)
                     .font(.caption.weight(.semibold)).frame(minHeight: 44)
             }
             Text("Why a pause can help").font(.headline)
             Text("A screen-free pause gives you room to change posture and step away from continuous screen work. Fifteen minutes is an app choice, not a medical prescription or a guaranteed health benefit.")
-                .font(.subheadline).foregroundStyle(PulsePlanTheme.secondary)
+                .font(.subheadline).foregroundStyle(LowCorTheme.secondary)
             Link("About screen-work breaks · HSE", destination: URL(string: "https://www.hse.gov.uk/msd/dse/work-routine.htm")!)
                 .font(.caption.weight(.semibold)).frame(minHeight: 44)
             Label(BreakSuggestionStore.caution, systemImage: "info.circle")
-                .font(.footnote).foregroundStyle(PulsePlanTheme.secondary)
+                .font(.footnote).foregroundStyle(LowCorTheme.secondary)
             Button("Understand the metrics and limits") { showsHealthInfo = true }
                 .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
         }.pulseCard()
@@ -236,14 +236,14 @@ struct TodayView: View {
     private var healthMetric: some View {
         Button { tab = 2 } label: {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Heart rate", systemImage: "heart").font(.subheadline.weight(.medium)).foregroundStyle(PulsePlanTheme.terracotta)
+                Label("Heart rate", systemImage: "heart").font(.subheadline.weight(.medium)).foregroundStyle(LowCorTheme.terracotta)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(health.readings.last.map { "\(Int($0.bpm.rounded()))" } ?? "—")
                         .font(.system(.largeTitle, design: .rounded).bold()).monospacedDigit()
                     Text("BPM").font(.caption.weight(.medium))
                 }
                 Text(health.readings.last.map { "Latest at \($0.date.formatted(date: .omitted, time: .shortened))" } ?? "View Health")
-                    .font(.caption).foregroundStyle(PulsePlanTheme.secondary)
+                    .font(.caption).foregroundStyle(LowCorTheme.secondary)
             }.frame(maxWidth: .infinity, alignment: .leading).pulseCard()
         }.buttonStyle(.plain).accessibilityHint("Opens your health readings")
     }
@@ -251,13 +251,13 @@ struct TodayView: View {
     private var calendarMetric: some View {
         Button { if calendar.connected { tab = 1 } else { connections = true } } label: {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Schedule", systemImage: "calendar").font(.subheadline.weight(.medium)).foregroundStyle(PulsePlanTheme.forest)
+                Label("Schedule", systemImage: "calendar").font(.subheadline.weight(.medium)).foregroundStyle(LowCorTheme.forest)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(calendar.connected ? "\(upcoming.count)" : "—")
                         .font(.system(.largeTitle, design: .rounded).bold()).monospacedDigit()
                     Text("ahead").font(.caption.weight(.medium))
                 }
-                Text(calendar.connected ? "See your day" : "Connect calendar").font(.caption).foregroundStyle(PulsePlanTheme.secondary)
+                Text(calendar.connected ? "See your day" : "Connect calendar").font(.caption).foregroundStyle(LowCorTheme.secondary)
             }.frame(maxWidth: .infinity, alignment: .leading).pulseCard()
         }.buttonStyle(.plain).accessibilityHint("Opens your schedule")
     }
@@ -277,7 +277,7 @@ struct TodayView: View {
             } else if upcoming.isEmpty && happeningNow.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("A little open space.").font(.headline)
-                    Text("No more timed events today. Your day is yours to shape.").font(.subheadline).foregroundStyle(PulsePlanTheme.secondary)
+                    Text("No more timed events today. Your day is yours to shape.").font(.subheadline).foregroundStyle(LowCorTheme.secondary)
                 }.pulseCard()
             } else {
                 if !happeningNow.isEmpty {
@@ -299,14 +299,14 @@ struct TodayView: View {
                         if index > 0 { Divider().padding(.vertical, 16) }
                         HStack(alignment: .top, spacing: 16) {
                             Text(event.startDate.formatted(date: .omitted, time: .shortened))
-                                .font(.caption.weight(.semibold)).foregroundStyle(PulsePlanTheme.secondary).frame(width: 68, alignment: .leading)
+                                .font(.caption.weight(.semibold)).foregroundStyle(LowCorTheme.secondary).frame(width: 68, alignment: .leading)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(event.title).font(.subheadline.weight(.semibold))
                                 Text(active ? "Ends at \(event.endDate.formatted(date: .omitted, time: .shortened))" : event.id == activeSavedEventID ? "Your protected break" : "\(max(1, Int(event.endDate.timeIntervalSince(event.startDate) / 60))) min")
-                                    .font(.caption).foregroundStyle(PulsePlanTheme.secondary)
+                                    .font(.caption).foregroundStyle(LowCorTheme.secondary)
                             }
                             Spacer(minLength: 0)
-                            if event.id == activeSavedEventID { Image(systemName: "checkmark.circle.fill").foregroundStyle(PulsePlanTheme.forest) }
+                            if event.id == activeSavedEventID { Image(systemName: "checkmark.circle.fill").foregroundStyle(LowCorTheme.forest) }
                         }
                     }
                 }.pulseCard()
@@ -356,8 +356,8 @@ struct PulsePrimaryButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label.font(.headline).padding(.horizontal, 16).padding(.vertical, 14)
             .frame(maxWidth: .infinity, minHeight: 54)
-            .foregroundStyle(inverted ? PulsePlanTheme.forest : .white)
-            .background(inverted ? Color.white : PulsePlanTheme.forest, in: RoundedRectangle(cornerRadius: 14))
+            .foregroundStyle(inverted ? LowCorTheme.forest : .white)
+            .background(inverted ? Color.white : LowCorTheme.forest, in: RoundedRectangle(cornerRadius: 14))
             .opacity(enabled ? (configuration.isPressed ? 0.8 : 1) : 0.5)
     }
 }

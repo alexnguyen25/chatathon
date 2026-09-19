@@ -20,24 +20,24 @@ struct ContentView: View {
             ExampleDayView()
                 .tabItem { Label("Example day", systemImage: "calendar") }
         }
-        .tint(PulsePlanTheme.forest)
+        .tint(LowCorTheme.forest)
     }
 
     private var liveTab: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Label("PulsePlan", systemImage: "waveform.path.ecg")
+                Label("LowCor", systemImage: "waveform.path.ecg")
                     .font(.title2.weight(.semibold))
-                    .foregroundStyle(PulsePlanTheme.ink)
-                    .tint(PulsePlanTheme.forest)
+                    .foregroundStyle(LowCorTheme.ink)
+                    .tint(LowCorTheme.forest)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("Live heart rate")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
-                    .foregroundStyle(PulsePlanTheme.ink)
+                    .foregroundStyle(LowCorTheme.ink)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Label(measurement.isMeasuring ? "Collecting via HealthKit" : "Ready for a private focus session", systemImage: "circle.fill")
-                    .foregroundStyle(PulsePlanTheme.secondary)
-                    .tint(measurement.isMeasuring ? .green : PulsePlanTheme.secondary)
+                    .foregroundStyle(LowCorTheme.secondary)
+                    .tint(measurement.isMeasuring ? .green : LowCorTheme.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 GroupBox("Meeting context") {
                     VStack(alignment: .leading, spacing: 8) {
@@ -58,10 +58,10 @@ struct ContentView: View {
                 }
                 GroupBox("Live focus session") {
                     VStack(spacing: 12) {
-                        Text(measurement.status).foregroundStyle(PulsePlanTheme.secondary).multilineTextAlignment(.center)
-                        Image(systemName: "heart").font(.system(size: 34)).foregroundStyle(PulsePlanTheme.terracotta)
-                        Text(measurement.heartRate.map { "\(Int($0.rounded()))" } ?? "—").font(.system(size: 88, weight: .semibold, design: .rounded)).foregroundStyle(PulsePlanTheme.ink).monospacedDigit()
-                        Text("BPM · Latest reading").foregroundStyle(PulsePlanTheme.secondary)
+                        Text(measurement.status).foregroundStyle(LowCorTheme.secondary).multilineTextAlignment(.center)
+                        Image(systemName: "heart").font(.system(size: 34)).foregroundStyle(LowCorTheme.terracotta)
+                        Text(measurement.heartRate.map { "\(Int($0.rounded()))" } ?? "—").font(.system(size: 88, weight: .semibold, design: .rounded)).foregroundStyle(LowCorTheme.ink).monospacedDigit()
+                        Text("BPM · Latest reading").foregroundStyle(LowCorTheme.secondary)
                         if let baseline = measurement.baselineHeartRate, let current = measurement.heartRate {
                             Text("Baseline \(Int(baseline.rounded())) BPM · \(Int((current - baseline).rounded())) BPM from baseline").font(.footnote).foregroundStyle(.secondary)
                         }
@@ -69,7 +69,7 @@ struct ContentView: View {
                             measurement.isMeasuring
                                 ? measurement.stopMeasurement()
                                 : measurement.startMeasurement(title: selectedEvent?.title ?? "Personal focus")
-                        }.buttonStyle(.borderedProminent).tint(measurement.isMeasuring ? .red : PulsePlanTheme.forest)
+                        }.buttonStyle(.borderedProminent).tint(measurement.isMeasuring ? .red : LowCorTheme.forest)
                         Button("Allow Health access") { measurement.requestAuthorization() }.buttonStyle(.bordered)
                     }
                 }
@@ -97,7 +97,7 @@ struct ContentView: View {
         .onChange(of: measurement.finishedSession) { _, session in
             if let session { history.add(session) }
         }
-        .background(PulsePlanTheme.canvas)
+        .background(LowCorTheme.canvas)
     }
 }
 

@@ -1,5 +1,5 @@
 import XCTest
-@testable import PulsePlanCore
+@testable import LowCorCore
 
 final class LoadAnalyzerTests: XCTestCase {
 func testDetectsSustainedElevatedLoadDuringMeetingHeavyWindow() {

@@ -4,8 +4,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 xcrun swift test
 xcodebuild -quiet \
-  -project ios/PulsePlan.xcodeproj \
-  -scheme PulsePlan \
+  -project ios/LowCor.xcodeproj \
+  -scheme LowCor \
   -configuration Debug \
   -destination 'generic/platform=iOS Simulator' \
   CODE_SIGNING_ALLOWED=NO build

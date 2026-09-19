@@ -1,4 +1,4 @@
-# PulsePlan — meeting-load stress monitor (iOS)
+# LowCor — meeting-load stress monitor (iOS)
 
 A SwiftUI screen that joins a synthetic minute-level biometric stream against a
 work calendar, detects one sustained-stress episode, and offers a single
@@ -45,7 +45,7 @@ library actually lives.
 cd ios/StressCore && swift test
 brew install xcodegen
 cd ios && xcodegen generate
-xcodebuild build -project PulsePlan.xcodeproj -scheme PulsePlan \
+xcodebuild build -project LowCor.xcodeproj -scheme LowCor \
   -destination 'generic/platform=iOS Simulator'
 ```
 

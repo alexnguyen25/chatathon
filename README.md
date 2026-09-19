@@ -1,4 +1,4 @@
-# PulsePlan
+# LowCor
 
 ### Your calendar knows when you’re busy. Your body knows when you need a pause.
 
@@ -11,7 +11,7 @@ A hackathon-built iPhone app that brings health signals, on-device AI, and your 
 
 Back-to-back meetings make it easy to ignore how you’re feeling. Calendar apps show when you’re free, but an empty slot alone doesn’t mean you need a break.
 
-PulsePlan starts with your recorded health data. When it finds a sustained rise in heart rate compared with earlier in the day, it explains the observation, suggests a calm pause, and finds room for it in your schedule. You review the suggestion and decide whether to add it.
+LowCor starts with your recorded health data. When it finds a sustained rise in heart rate compared with earlier in the day, it explains the observation, suggests a calm pause, and finds room for it in your schedule. You review the suggestion and decide whether to add it.
 
 **Health signals first. Calendar placement second. You make the call.**
 
@@ -42,7 +42,7 @@ The demo opens at **11:55 AM**: a fictional corporate workday with **15 calendar
 4. Confirm the **12:00–12:15** break with **Add to demo day**.
 5. Tap **See it in my day** to find it in the agenda.
 
-Use **Reset** to replay the scenario. Demo data stays inside PulsePlan and never writes to Apple Health or your real calendar.
+Use **Reset** to replay the scenario. Demo data stays inside LowCor and never writes to Apple Health or your real calendar.
 
 [Full demo walkthrough →](docs/DEMO.md)
 
@@ -54,19 +54,19 @@ These are our **design mockups**, not screenshots of every current app state:
 
 <table>
   <tr>
-    <td><img src="docs/design/pulseplan-core/02-example-day.png" alt="PulsePlan day-view design mockup" width="300"></td>
-    <td><img src="docs/design/pulseplan-core/03-break-suggestion.png" alt="PulsePlan break-suggestion design mockup" width="300"></td>
+    <td><img src="docs/design/lowcor-core/02-example-day.png" alt="LowCor day-view design mockup" width="300"></td>
+    <td><img src="docs/design/lowcor-core/03-break-suggestion.png" alt="LowCor break-suggestion design mockup" width="300"></td>
   </tr>
 </table>
 
-[Design references and tokens →](docs/design/pulseplan-core/README.md)
+[Design references and tokens →](docs/design/lowcor-core/README.md)
 
 ## Run locally
 
 **Requirements:** Xcode 26+ and an iOS 26+ simulator or iPhone.
 
-1. Open [`ios/PulsePlan.xcodeproj`](ios/PulsePlan.xcodeproj).
-2. Select the **PulsePlan** scheme and your device or simulator.
+1. Open [`ios/LowCor.xcodeproj`](ios/LowCor.xcodeproj).
+2. Select the **LowCor** scheme and your device or simulator.
 3. For an iPhone, select your development team in **Signing & Capabilities** and change the bundle identifier if needed.
 4. Build and run. Demo mode works without Health or Calendar permissions.
 
@@ -74,7 +74,7 @@ On-device AI requires a device where Apple Foundation Models is available. The l
 
 ### Connect real data
 
-Exit demo mode and connect Health and Calendar separately. PulsePlan can read available heart rate, HRV (SDNN), resting heart rate, and sleep records through HealthKit.
+Exit demo mode and connect Health and Calendar separately. LowCor can read available heart rate, HRV (SDNN), resting heart rate, and sleep records through HealthKit.
 
 Real breaks are saved only after review and confirmation. Calendar entries omit physiological readings and AI explanations; their visibility follows the selected calendar’s sharing settings.
 
@@ -92,14 +92,14 @@ The test suite covers the app’s actual core logic: health-pattern checks, miss
 
 | Location | What’s inside |
 | --- | --- |
-| [`ios/PulsePlan`](ios/PulsePlan) | The active SwiftUI app and integrations |
-| [`ios/PulsePlan/Core`](ios/PulsePlan/Core) | Shared health-analysis and scheduling logic |
-| [`Tests/PulsePlanCoreTests`](Tests/PulsePlanCoreTests) | Core regression tests |
+| [`ios/LowCor`](ios/LowCor) | The active SwiftUI app and integrations |
+| [`ios/LowCor/Core`](ios/LowCor/Core) | Shared health-analysis and scheduling logic |
+| [`Tests/LowCorCoreTests`](Tests/LowCorCoreTests) | Core regression tests |
 | [`docs`](docs/README.md) | Demo guide, design assets, and implementation notes |
 | [`archive`](archive/README.md) | Earlier hackathon prototypes, preserved for reference |
 
 ## Built for a hackathon, not a diagnosis
 
-PulsePlan is an experimental MVP, not a medical device. Heart rate can change for many reasons; the app cannot diagnose stress or prove a meeting caused a physiological change. Its pattern rule is not clinically validated, and missing data or no suggestion does not establish wellbeing.
+LowCor is an experimental MVP, not a medical device. Heart rate can change for many reasons; the app cannot diagnose stress or prove a meeting caused a physiological change. Its pattern rule is not clinically validated, and missing data or no suggestion does not establish wellbeing.
 
 Suggestions are optional context—not instructions to trust blindly. Use your own judgment and seek appropriate medical care for concerning symptoms. Reliable background monitoring and App Store readiness are outside this prototype’s scope.

@@ -1,7 +1,7 @@
-# PulsePlan: on-device LLM analysis of calendar, HealthKit, and reflections
+# LowCor: on-device LLM analysis of calendar, HealthKit, and reflections
 
 **Research date:** 2026-09-19  
-**Scope:** iOS 26 SwiftUI design research for PulsePlan. This is product/platform guidance, not medical, legal, or regulatory advice.
+**Scope:** iOS 26 SwiftUI design research for LowCor. This is product/platform guidance, not medical, legal, or regulatory advice.
 
 ## Decision
 
@@ -23,7 +23,7 @@ HealthKit grants access by individual data type; the person may allow, limit, or
 
 Apple’s current HealthKit policy says an app may not disclose HealthKit information to a third party without the person’s express permission; even then, the third party may receive it only to provide a health or fitness service. The app must clearly disclose its use, and it may not use/sell this data for advertising, data brokers, or information resellers. Apple’s Developer Program License Agreement also applies the same restriction to health, motion, fitness, and journaling-suggestions information. [Protecting HealthKit privacy][health-privacy] [Developer Program License Agreement, §3.3(D)][adpla]
 
-Apple says on-device Apple Intelligence processing can complete a task without data leaving the device. However, Apple Intelligence can use Private Cloud Compute for workloads that need more compute; PCC data is processed only to fulfill the request and is not retained or accessible to Apple. These are Apple's privacy assurances, not a reason to silently change PulsePlan’s on-device promise. The MVP should instantiate only the on-device `SystemLanguageModel`, avoid Private Cloud Compute and third-party `LanguageModel` providers, declare this precisely in product copy, and retain a deterministic non-LLM fallback. [Apple Intelligence & Privacy][ai-privacy] [Foundation Models overview][fm-overview]
+Apple says on-device Apple Intelligence processing can complete a task without data leaving the device. However, Apple Intelligence can use Private Cloud Compute for workloads that need more compute; PCC data is processed only to fulfill the request and is not retained or accessible to Apple. These are Apple's privacy assurances, not a reason to silently change LowCor’s on-device promise. The MVP should instantiate only the on-device `SystemLanguageModel`, avoid Private Cloud Compute and third-party `LanguageModel` providers, declare this precisely in product copy, and retain a deterministic non-LLM fallback. [Apple Intelligence & Privacy][ai-privacy] [Foundation Models overview][fm-overview]
 
 ## Recommended safe analysis contract
 
@@ -41,7 +41,7 @@ The current implementation labels a window “elevated load” when heart rate i
 - Calendar density is contextual metadata, not a physiological cause. Joining it to heart rate/HRV can invite an unsupported causal claim (for example, “meetings caused stress”).
 - Missing, denied, delayed, or source-mixed HealthKit data can be mistaken for an observed state. HealthKit’s permission model deliberately makes denied reads indistinguishable from absent data to the app. [Protecting HealthKit privacy][health-privacy]
 - An LLM asked to explain this label will add plausible language, not clinical validation. Structured output reduces malformed responses, not hallucination or medical-risk errors. [Guided generation][guided-generation]
-- Apple reviews more closely apps that could diagnose or treat patients, and requires health-measurement accuracy claims to disclose data and methodology that can be validated. “Elevated load,” “stress detected,” and similar UI wording would move PulsePlan toward that risk. [App Review Guidelines 1.4.1][app-review]
+- Apple reviews more closely apps that could diagnose or treat patients, and requires health-measurement accuracy claims to disclose data and methodology that can be validated. “Elevated load,” “stress detected,” and similar UI wording would move LowCor toward that risk. [App Review Guidelines 1.4.1][app-review]
 
 For the prototype, retire the label from user-facing analysis. If the code is kept for experimentation, rename its output to a neutral observation such as `candidateCorrelationWindow`, keep it behind a developer-only flag, do not show it as a health result, and do not pass it to an LLM as ground truth. A future user-facing metric needs a separately specified purpose, evidence, validation plan, calibration policy, and review of medical-device and privacy obligations.
 

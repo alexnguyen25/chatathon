@@ -3,7 +3,7 @@ import StressCore
 import StressMonitorUI
 
 @main
-struct PulsePlanApp: App {
+struct LowCorApp: App {
     var body: some Scene {
         WindowGroup {
             AppShell(service: Self.suggestionService())
@@ -18,7 +18,7 @@ struct PulsePlanApp: App {
         if (try? store.apiKey()) != nil {
             return AnthropicSuggestionService(keyStore: store)
         }
-        print("[PulsePlan] No ANTHROPIC_API_KEY found — using the canned explanation.")
+        print("[LowCor] No ANTHROPIC_API_KEY found — using the canned explanation.")
         return StubSuggestionService()
     }
 }

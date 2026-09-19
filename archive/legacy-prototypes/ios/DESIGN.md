@@ -1,4 +1,4 @@
-# Visual direction — PulsePlan
+# Visual direction — LowCor
 
 Derived from the five supplied mockups, not invented. This records the system
 those screens imply so new work stays consistent with them.
