@@ -11,7 +11,7 @@ public struct DayView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DS.Space.xl) {
+            VStack(alignment: .leading, spacing: DS.Space.l) {
                 ScreenHeader(title: "Your day", subtitle: model.day.label) {
                     SampleDataPill()
                 }
@@ -102,10 +102,11 @@ struct DayTimeline: View {
     private let dayStart = SyntheticDay.dayStartMinute
     private let dayEnd = SyntheticDay.dayEndMinute
 
-    // 580 pushed the suggestion card off-screen on a 6.1" phone. The whole
-    // point of this screen is seeing the day *and* the suggested action
-    // together, so the timeline yields the height.
-    @ScaledMetric(relativeTo: .subheadline) private var height: CGFloat = 380
+    // Measured against CI screenshots on a 6.1" phone, not guessed: 580 hid
+    // the suggestion card entirely, 440 showed its title, 380 still clipped
+    // the button. The screen exists to show the day *and* the action it is
+    // proposing, so the timeline keeps yielding until both fit.
+    @ScaledMetric(relativeTo: .subheadline) private var height: CGFloat = 330
     // Scaled: at accessibility sizes a fixed 52 wrapped "Time" to "Tim/e"
     // and "9 AM" onto two lines. Capped below, or the side columns eat the
     // calendar entirely.
